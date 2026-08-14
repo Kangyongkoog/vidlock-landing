@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VIDLOCK — Zoom 녹화 방지, 지금 만들고 있습니다</title>
+  <meta name="description" content="와풀 AI가 Zoom 화상회의 실시간 녹화 차단 소프트웨어 VIDLOCK을 개발 중입니다. 교육기관·기업 사전 구독자를 모집합니다." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0c1b2a;
+      --ink-soft: #243447;
+      --mist: #e8f1f4;
+      --paper: #f4f8fa;
+      --teal: #0d9f8c;
+      --teal-deep: #08786a;
+      --warn: #c45c26;
+      --white: #ffffff;
+      --shadow: 0 24px 60px rgba(12, 27, 42, 0.14);
+      --font-display: "Bricolage Grotesque", "IBM Plex Sans KR", sans-serif;
+      --font-body: "IBM Plex Sans KR", sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+
+    .nav {
+      position: absolute; top: 0; left: 0; right: 0; z-index: 20; padding: 22px 0;
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      width: min(1120px, calc(100% - 40px)); margin: 0 auto;
+    }
+    .nav-brand {
+      font-family: var(--font-display); font-weight: 800;
+      letter-spacing: -0.04em; font-size: 1.15rem; color: var(--white);
+    }
+    .nav-cta {
+      font-size: 0.9rem; font-weight: 600; color: var(--ink);
+      background: var(--white); padding: 10px 18px; border-radius: 999px;
+      transition: transform 0.25s ease, background 0.25s ease;
+    }
+    .nav-cta:hover { transform: translateY(-1px); background: var(--mist); }
+
+    .hero {
+      position: relative; min-height: 100vh; min-height: 100dvh;
+      display: grid; align-items: end; color: var(--white); overflow: hidden;
+      background:
+        radial-gradient(ellipse 80% 60% at 70% 40%, rgba(13, 159, 140, 0.35), transparent 60%),
+        linear-gradient(160deg, #07131f 0%, #0c2438 45%, #0a3d38 100%);
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(ellipse at 60% 40%, black 20%, transparent 75%);
+      animation: gridDrift 28s linear infinite;
+    }
+    @keyframes gridDrift {
+      from { transform: translateY(0); }
+      to { transform: translateY(64px); }
+    }
+    .hero-visual {
+      position: absolute; right: -4%; top: 12%;
+      width: min(58vw, 720px); aspect-ratio: 4 / 3;
+      background:
+        linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'%3E%3Crect width='800' height='600' fill='%230a1f2e'/%3E%3Cg opacity='0.9'%3E%3Crect x='40' y='40' width='720' height='420' fill='%23112b3d' stroke='%231d4a5c' stroke-width='2'/%3E%3Ccircle cx='160' cy='180' r='48' fill='%230d9f8c' opacity='0.35'/%3E%3Ccircle cx='320' cy='180' r='48' fill='%230d9f8c' opacity='0.22'/%3E%3Ccircle cx='480' cy='180' r='48' fill='%230d9f8c' opacity='0.22'/%3E%3Ccircle cx='640' cy='180' r='48' fill='%230d9f8c' opacity='0.22'/%3E%3Crect x='80' y='280' width='200' height='12' fill='%23ffffff' opacity='0.25'/%3E%3Crect x='80' y='308' width='140' height='8' fill='%23ffffff' opacity='0.12'/%3E%3Crect x='40' y='480' width='720' height='80' fill='%23071a26'/%3E%3Crect x='60' y='505' width='120' height='30' rx='4' fill='%230d9f8c'/%3E%3Ctext x='78' y='525' fill='white' font-family='Arial' font-size='13' font-weight='700'%3EBUILDING%3C/text%3E%3C/g%3E%3Crect x='220' y='120' width='360' height='240' fill='%23000000' opacity='0.82'/%3E%3Cpath d='M380 220 L420 250 L380 280 Z' fill='%230d9f8c' opacity='0.5'/%3E%3C/svg%3E") center/cover no-repeat;
+      box-shadow: var(--shadow);
+      animation: visualIn 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+      opacity: 0.95;
+    }
+    @keyframes visualIn {
+      from { opacity: 0; transform: translateX(40px) scale(0.98); }
+      to { opacity: 0.95; transform: translateX(0) scale(1); }
+    }
+    .hero-content {
+      position: relative; z-index: 2; padding: 0 0 72px;
+      width: min(1120px, calc(100% - 40px)); max-width: 580px;
+      margin-left: max(20px, calc((100% - 1120px) / 2));
+      animation: copyIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+    }
+    @keyframes copyIn {
+      from { opacity: 0; transform: translateY(28px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero-brand {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: clamp(3.4rem, 9vw, 6.2rem);
+      letter-spacing: -0.06em; line-height: 0.92; margin-bottom: 20px;
+    }
+    .hero-brand span {
+      display: inline-block;
+      background: linear-gradient(120deg, #ffffff 0%, #9fe8dc 100%);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .hero h1 {
+      font-family: var(--font-display); font-weight: 700;
+      font-size: clamp(1.35rem, 2.6vw, 1.85rem);
+      letter-spacing: -0.03em; line-height: 1.35;
+      margin-bottom: 14px; max-width: 18em;
+    }
+    .hero p.lead {
+      font-size: 1.02rem; color: rgba(255,255,255,0.78);
+      margin-bottom: 28px; max-width: 30em;
+    }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 12px; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      font-family: var(--font-body); font-weight: 600; font-size: 0.98rem;
+      padding: 14px 22px; border-radius: 999px; border: none; cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { background: var(--teal); color: var(--white); }
+    .btn-primary:hover { background: var(--teal-deep); }
+    .btn-ghost {
+      background: transparent; color: var(--white);
+      border: 1px solid rgba(255,255,255,0.35);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.08); }
+    .btn-ink {
+      background: var(--ink); color: var(--white); width: 100%;
+    }
+    .btn-ink:hover { background: #15293a; }
+
+    section { padding: 88px 0; }
+    .section-label {
+      font-size: 0.78rem; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--teal-deep); margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: var(--font-display); font-weight: 700;
+      font-size: clamp(1.7rem, 3.4vw, 2.4rem);
+      letter-spacing: -0.04em; line-height: 1.2; margin-bottom: 14px;
+    }
+    .section-desc {
+      color: var(--ink-soft); font-size: 1.05rem; max-width: 38em;
+    }
+
+    .building {
+      background:
+        radial-gradient(circle at 90% 10%, rgba(13,159,140,0.1), transparent 40%),
+        var(--white);
+    }
+    .building-grid {
+      display: grid; grid-template-columns: 1.15fr 0.85fr;
+      gap: 48px; align-items: start; margin-top: 40px;
+    }
+    .building-list {
+      list-style: none; display: flex; flex-direction: column; gap: 16px;
+      margin-top: 24px;
+    }
+    .building-list li {
+      padding-left: 28px; position: relative; color: var(--ink-soft);
+    }
+    .building-list li::before {
+      content: ""; position: absolute; left: 0; top: 0.55em;
+      width: 10px; height: 10px; border-radius: 2px; background: var(--teal);
+    }
+    .founders-note {
+      padding: 32px 28px;
+      background: linear-gradient(160deg, #0c1b2a, #143247);
+      color: var(--white); min-height: 260px;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      position: relative; overflow: hidden;
+    }
+    .founders-note::after {
+      content: ""; position: absolute; inset: auto -20% -30% 20%;
+      height: 80%;
+      background: radial-gradient(circle, rgba(13,159,140,0.45), transparent 65%);
+      animation: pulseGlow 4.5s ease-in-out infinite;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.55; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.08); }
+    }
+    .founders-note h3,
+    .founders-note p { position: relative; z-index: 1; }
+    .founders-note h3 {
+      font-family: var(--font-display); font-size: 1.45rem;
+      letter-spacing: -0.03em; margin-bottom: 10px;
+    }
+    .founders-note p { color: rgba(255,255,255,0.75); font-size: 0.98rem; }
+
+    .problem { background: var(--mist); }
+    .problem-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 28px; margin-top: 40px;
+    }
+    .problem-item h3 {
+      font-family: var(--font-display); font-size: 1.15rem;
+      letter-spacing: -0.02em; margin-bottom: 8px;
+    }
+    .problem-item p { color: var(--ink-soft); font-size: 0.98rem; }
+
+    .how { background: var(--white); }
+    .steps {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 28px; margin-top: 44px;
+    }
+    .step-num {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: 2.6rem; letter-spacing: -0.05em;
+      color: var(--teal); line-height: 1; margin-bottom: 14px;
+    }
+    .step h3 {
+      font-family: var(--font-display); font-size: 1.2rem;
+      letter-spacing: -0.02em; margin-bottom: 8px;
+    }
+    .step p { color: var(--ink-soft); font-size: 0.98rem; }
+
+    .offer { background: var(--paper); }
+    .offer-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 40px; margin-top: 40px; align-items: start;
+    }
+    .price-main {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+      letter-spacing: -0.05em; line-height: 1.05;
+    }
+    .price-main small {
+      display: block; margin-top: 12px; font-size: 1rem;
+      font-weight: 500; font-family: var(--font-body);
+      color: var(--ink-soft); letter-spacing: 0;
+    }
+    .perk-list {
+      list-style: none; display: flex; flex-direction: column;
+      gap: 10px; margin-top: 20px;
+    }
+    .perk-list li {
+      padding-left: 18px; position: relative; color: var(--ink-soft);
+    }
+    .perk-list li::before {
+      content: ""; position: absolute; left: 0; top: 0.55em;
+      width: 7px; height: 7px; background: var(--teal);
+    }
+
+    .subscribe {
+      background: linear-gradient(145deg, #0c1b2a 0%, #0f3d38 100%);
+      color: var(--white); padding: 96px 0;
+    }
+    .subscribe .section-label { color: #9fe8dc; }
+    .subscribe .section-title { color: var(--white); }
+    .subscribe .section-desc {
+      color: rgba(255,255,255,0.72); margin-bottom: 28px;
+    }
+    .form-panel {
+      display: grid; grid-template-columns: 1.1fr 0.9fr;
+      gap: 36px; align-items: start; margin-top: 8px;
+    }
+    .form-box {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 28px 24px;
+    }
+    .field { margin-bottom: 14px; }
+    .field label {
+      display: block; font-size: 0.82rem; font-weight: 600;
+      margin-bottom: 6px; color: rgba(255,255,255,0.8);
+    }
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%; padding: 12px 14px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(0,0,0,0.25); color: var(--white);
+      font-family: var(--font-body); font-size: 0.95rem;
+      border-radius: 8px; outline: none;
+    }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus { border-color: var(--teal); }
+    .field textarea { min-height: 88px; resize: vertical; }
+    .form-note {
+      margin-top: 12px; font-size: 0.82rem;
+      color: rgba(255,255,255,0.55); line-height: 1.5;
+    }
+    .form-ok {
+      display: none; margin-top: 14px; padding: 12px 14px;
+      background: rgba(13,159,140,0.2); color: #9fe8dc;
+      font-size: 0.92rem; font-weight: 600;
+    }
+    .form-ok.show { display: block; }
+    .who-list {
+      list-style: none; display: flex; flex-direction: column; gap: 14px;
+      margin-top: 8px;
+    }
+    .who-list li {
+      padding-left: 18px; position: relative;
+      color: rgba(255,255,255,0.78); font-size: 0.98rem;
+    }
+    .who-list li::before {
+      content: ""; position: absolute; left: 0; top: 0.55em;
+      width: 7px; height: 7px; background: #9fe8dc;
+    }
+
+    footer {
+      background: #07131f; color: rgba(255,255,255,0.55);
+      padding: 28px 0; font-size: 0.88rem;
+    }
+    .footer-inner {
+      display: flex; flex-wrap: wrap; gap: 12px 28px;
+      justify-content: space-between; align-items: center;
+    }
+    footer strong { color: rgba(255,255,255,0.9); font-weight: 600; }
+
+    .reveal {
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.on { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 900px) {
+      .hero-visual {
+        position: absolute; right: -18%; top: 8%;
+        width: 92vw; opacity: 0.35;
+      }
+      .hero-content {
+        max-width: 100%; margin-left: auto; margin-right: auto;
+        padding-bottom: 56px; padding-top: 28vh;
+      }
+      .building-grid, .problem-grid, .steps, .offer-grid, .form-panel {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 560px) {
+      .hero-brand { font-size: 3.2rem; }
+      .nav-cta { display: none; }
+      section { padding: 64px 0; }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="#top">VIDLOCK</a>
+      <a class="nav-cta" href="#subscribe">사전 구독 신청</a>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-label="VIDLOCK 소개">
+      <div class="hero-grid" aria-hidden="true"></div>
+      <div class="hero-visual" role="img" aria-label="개발 중인 Zoom 보호 화면 일러스트"></div>
+      <div class="hero-content">
+        <p class="hero-brand"><span>VIDLOCK</span></p>
+        <h1>Zoom 회의 녹화를 막는 프로그램을, 지금 만들고 있습니다.</h1>
+        <p class="lead">와풀 AI가 개발 중인 실시간 녹화 차단 소프트웨어입니다. 정식 출시 전, 함께할 유료 사전 구독자를 모집합니다.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#subscribe">유료 사전 구독 신청</a>
+          <a class="btn btn-ghost" href="#building">무엇을 만드는지</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="building" id="building">
+      <div class="wrap">
+        <p class="section-label reveal">Now building</p>
+        <h2 class="section-title reveal">완제품이 아니라, 출시 직전 제품입니다.</h2>
+        <div class="building-grid">
+          <div class="reveal">
+            <p class="section-desc">VIDLOCK은 Zoom 화상회의 중 화면 녹화·캡처를 실시간으로 감지하고, 회의 화면을 잠가 유출을 막는 데스크톱 보안 앱입니다. 교육·컨설팅·기업 회의를 위해 만들고 있습니다.</p>
+            <ul class="building-list">
+              <li>호스트용 Desktop 앱 + 참가자용 무료 앱 구조</li>
+              <li>Zoom 초대 링크로 보호 모드 참가</li>
+              <li>녹화 시도 시 OS 레벨 화면 잠금</li>
+              <li>상표 출원 진행 중 · 와풀 AI 교육연구소 제작</li>
+            </ul>
+          </div>
+          <aside class="founders-note reveal">
+            <h3>왜 미리 알려드리나요?</h3>
+            <p>출시 전에 필요한 기관·강사·보안 담당자를 모으고, 초기 구독자 피드백으로 제품을 다듬기 위해서입니다. “이런 걸 만들고 있다”는 사실부터 공유합니다.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="problem" id="problem">
+      <div class="wrap">
+        <p class="section-label reveal">Why it matters</p>
+        <h2 class="section-title reveal">회의는 끝나도, 화면은 남습니다.</h2>
+        <p class="section-desc reveal">실시간 Zoom 화면이 녹화되면 콘텐츠·노하우·내부 자료가 그대로 밖으로 나갑니다.</p>
+        <div class="problem-grid">
+          <article class="problem-item reveal">
+            <h3>교육·강의 유출</h3>
+            <p>유료 수업·컨설팅 화면이 무단 공유되면 신뢰와 수익이 동시에 깎입니다.</p>
+          </article>
+          <article class="problem-item reveal">
+            <h3>기존 DRM의 한계</h3>
+            <p>파일 암호화는 VOD에 강하고, 실시간 화상회의 보호에는 약합니다.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="how" id="how">
+      <div class="wrap">
+        <p class="section-label reveal">How it will work</p>
+        <h2 class="section-title reveal">호스트만 구독하면, 참가자는 무료입니다.</h2>
+        <p class="section-desc reveal">도입 장벽을 낮추기 위해 참가자 앱은 무료로 배포합니다.</p>
+        <div class="steps">
+          <article class="step reveal">
+            <div class="step-num">01</div>
+            <h3>호스트가 구독</h3>
+            <p>회의 주최자·학원·기업이 VIDLOCK Desktop을 사용합니다.</p>
+          </article>
+          <article class="step reveal">
+            <div class="step-num">02</div>
+            <h3>참가자는 링크 참가</h3>
+            <p>참가자는 무료 앱에 Zoom 초대 링크만 붙여넣으면 됩니다.</p>
+          </article>
+          <article class="step reveal">
+            <div class="step-num">03</div>
+            <h3>녹화 시도 차단</h3>
+            <p>녹화·캡처가 감지되면 화면을 잠가 내용이 남지 않게 합니다.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="offer" id="offer">
+      <div class="wrap">
+        <p class="section-label reveal">Founding offer</p>
+        <h2 class="section-title reveal">사전 구독자에게만 드리는 조건입니다.</h2>
+        <div class="offer-grid">
+          <div class="reveal">
+            <p class="price-main">월 3만 원부터<small>정식가 월 3~5만 원 · 호스트 라이선스 · 참가자 무료</small></p>
+            <ul class="perk-list">
+              <li>출시 후 우선 설치·온보딩 지원</li>
+              <li>초기 구독 기간 할인 협의 가능</li>
+              <li>기능 우선순위 피드백 반영</li>
+              <li>교육기관·소규모 팀 시범 운영 우선</li>
+            </ul>
+          </div>
+          <div class="reveal">
+            <p class="section-desc" style="margin-top:8px">결제는 출시·계약 확정 후 진행합니다. 지금은 <strong>관심 있는 구독 후보자</strong>를 먼저 모읍니다. “만들고 있다”는 소식에 응답해 주시면, 출시 일정과 조건을 개별 안내드립니다.</p>
+            <div class="cta-row" style="margin-top:24px">
+              <a class="btn btn-primary" href="#subscribe" style="color:#fff">사전 구독 신청하기</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="subscribe" id="subscribe">
+      <div class="wrap">
+        <p class="section-label reveal">Subscribe early</p>
+        <h2 class="section-title reveal">유료 사전 구독, 지금 남겨 주세요.</h2>
+        <p class="section-desc reveal">기관명·이메일만 남겨 주셔도 됩니다. 와풀 AI가 직접 연락드립니다.</p>
+        <div class="form-panel">
+          <form class="form-box reveal" id="subscribeForm">
+            <div class="field">
+              <label for="name">이름 / 담당자</label>
+              <input id="name" name="name" type="text" required placeholder="홍길동" />
+            </div>
+            <div class="field">
+              <label for="org">기관 / 회사</label>
+              <input id="org" name="org" type="text" required placeholder="OO학원, OO주식회사" />
+            </div>
+            <div class="field">
+              <label for="email">이메일</label>
+              <input id="email" name="email" type="email" required placeholder="you@company.com" />
+            </div>
+            <div class="field">
+              <label for="plan">관심 유형</label>
+              <select id="plan" name="plan">
+                <option value="host-monthly">호스트 월 구독 (3~5만 원)</option>
+                <option value="edu-pilot">교육기관 시범 운영</option>
+                <option value="team">팀·기업 도입 상담</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="msg">하고 싶은 말 (선택)</label>
+              <textarea id="msg" name="msg" placeholder="예: 월 20명 Zoom 수업, 출시 일정 궁금합니다"></textarea>
+            </div>
+            <button class="btn btn-ink" type="submit">사전 구독 의사 보내기</button>
+            <p class="form-note">버튼을 누르면 메일 앱이 열립니다. 제목·본문이 자동으로 채워지니 보내기만 하시면 됩니다. (나중에 Google Form / 결제 링크로 연결 가능)</p>
+            <div class="form-ok" id="formOk">메일 창을 열었습니다. 전송해 주시면 접수됩니다.</div>
+          </form>
+          <div class="reveal">
+            <p class="section-label" style="color:#9fe8dc">이런 분께 맞습니다</p>
+            <ul class="who-list">
+              <li>Zoom으로 유료 강의·컨설팅을 하는 강사·학원</li>
+              <li>내부 회의 화면 유출이 걱정인 중소기업</li>
+              <li>출시 전 제품을 먼저 써보고 싶은 보안 구독자</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <div><strong>VIDLOCK</strong> · 와풀 AI 교육연구소 · 개발 중</div>
+      <div>사업자 477-14-02961 · 대표 강용국 · 상표 출원 중</div>
+    </div>
+  </footer>
+
+  <script>
+    const els = document.querySelectorAll(".reveal");
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add("on");
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.16 });
+    els.forEach((el) => io.observe(el));
+
+    document.getElementById("subscribeForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("name").value.trim();
+      const org = document.getElementById("org").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const plan = document.getElementById("plan").value;
+      const msg = document.getElementById("msg").value.trim();
+      const subject = encodeURIComponent(`[VIDLOCK 사전구독] ${org} / ${name}`);
+      const body = encodeURIComponent(
+        `VIDLOCK 유료 사전 구독 신청\n\n` +
+        `이름: ${name}\n기관: ${org}\n이메일: ${email}\n관심유형: ${plan}\n\n` +
+        `메시지:\n${msg || "(없음)"}\n`
+      );
+      window.location.href = `mailto:support@vidlock.app?subject=${subject}&body=${body}`;
+      document.getElementById("formOk").classList.add("show");
+    });
+  </script>
+</body>
+</html>
