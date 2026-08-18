@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VIDLOCK 관리자 · 버그 수정 연습</title>
+  <meta name="description" content="VIDLOCK 호스트/참가자 앱 버그 수정 연습용 체크리스트와 테스트 가이드" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b1520;
+      --card: #122231;
+      --line: rgba(255,255,255,0.1);
+      --txt: #e8f0f4;
+      --mut: #8fa3b3;
+      --ok: #2ecc71;
+      --warn: #f39c12;
+      --err: #e74c3c;
+      --acc: #0d9f8c;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "IBM Plex Sans KR", sans-serif;
+      background: var(--bg);
+      color: var(--txt);
+      line-height: 1.65;
+    }
+    a { color: var(--acc); }
+    .wrap { width: min(920px, calc(100% - 32px)); margin: 0 auto; padding: 32px 0 64px; }
+    .top {
+      display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;
+      margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid var(--line);
+    }
+    .badge {
+      display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--acc); background: rgba(13,159,140,0.15);
+      padding: 6px 10px; border-radius: 4px;
+    }
+    h1 { font-size: clamp(1.5rem, 4vw, 2rem); letter-spacing: -0.03em; margin: 8px 0; }
+    .sub { color: var(--mut); font-size: 0.95rem; max-width: 36em; }
+    .card {
+      background: var(--card); border: 1px solid var(--line);
+      padding: 22px 20px; margin-bottom: 16px;
+    }
+    .card h2 {
+      font-size: 1.05rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+    }
+    .card h2 span.num {
+      font-family: "JetBrains Mono", monospace; font-size: 0.75rem;
+      color: var(--acc); background: rgba(13,159,140,0.12);
+      padding: 2px 8px; border-radius: 4px;
+    }
+    pre, code {
+      font-family: "JetBrains Mono", monospace; font-size: 0.82rem;
+    }
+    pre {
+      background: #081018; border: 1px solid var(--line);
+      padding: 14px; overflow-x: auto; margin: 10px 0; color: #b8d4e8;
+    }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
+    .checklist { list-style: none; }
+    .checklist li {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 10px 0; border-bottom: 1px solid var(--line);
+      font-size: 0.92rem;
+    }
+    .checklist li:last-child { border-bottom: none; }
+    .checklist input { margin-top: 4px; accent-color: var(--acc); width: 16px; height: 16px; flex-shrink: 0; }
+    .checklist label { cursor: pointer; flex: 1; }
+    .checklist label.done { color: var(--mut); text-decoration: line-through; }
+    .tag {
+      display: inline-block; font-size: 0.7rem; font-weight: 700;
+      padding: 2px 7px; border-radius: 3px; margin-right: 6px;
+    }
+    .tag-bug { background: rgba(231,76,60,0.2); color: #ff8a80; }
+    .tag-test { background: rgba(243,156,18,0.2); color: #ffcc80; }
+    .tag-ok { background: rgba(46,204,113,0.2); color: #81c784; }
+    .progress {
+      height: 6px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; margin: 12px 0 4px;
+    }
+    .progress-bar { height: 100%; background: var(--acc); width: 0%; transition: width 0.3s ease; }
+    .progress-txt { font-size: 0.8rem; color: var(--mut); }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .btn {
+      display: inline-block; font-size: 0.88rem; font-weight: 600;
+      padding: 10px 16px; border-radius: 6px; border: 1px solid var(--line);
+      background: rgba(255,255,255,0.05); color: var(--txt); cursor: pointer;
+    }
+    .btn:hover { background: rgba(255,255,255,0.1); }
+    .btn-acc { background: var(--acc); border-color: var(--acc); color: #fff; }
+    .note { font-size: 0.85rem; color: var(--mut); margin-top: 8px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-top: 8px; }
+    th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+    th { color: var(--mut); font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div>
+        <span class="badge">Admin Practice</span>
+        <h1>VIDLOCK 버그 수정 연습</h1>
+        <p class="sub">관리자·개발자가 PC에서 앱을 실행하고, 아래 체크리스트대로 버그를 재현·수정·검증하는 연습용 페이지입니다. 이 페이지는 어디서든 링크로 열 수 있습니다.</p>
+      </div>
+      <a class="btn" href="index.html">← 소개 페이지</a>
+    </header>
+
+    <section class="card">
+      <h2><span class="num">01</span> 연습 환경 준비 (PC에서 1회)</h2>
+      <p class="note">웹 링크만으로는 앱이 실행되지 않습니다. 아래 순서로 <strong>로컬 PC</strong>에서 앱을 켠 뒤, 이 페이지의 체크리스트를 보며 연습하세요.</p>
+      <pre>Node.js 18+ 설치 → VIDLOCK 폴더 열기
+
+# 호스트(관리자) 앱
+cd vidlock-desktop
+npm install
+npm start
+
+# 참가자 앱 (새 터미널)
+cd vidlock-participant
+npm install
+npm start</pre>
+      <p class="note">Windows: <code>시작_호스트.bat</code> / <code>시작_참가자.bat</code> 더블클릭으로도 실행 가능</p>
+    </section>
+
+    <section class="card">
+      <h2><span class="num">02</span> 연습 진행률</h2>
+      <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+      <p class="progress-txt"><span id="progressCount">0</span> / <span id="progressTotal">0</span> 완료 · 체크는 이 브라우저에 저장됩니다</p>
+      <div class="btn-row">
+        <button class="btn" type="button" id="resetChecks">체크 초기화</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2><span class="num">03</span> 알려진 버그 · 연습 과제</h2>
+      <ul class="checklist" id="list-bugs">
+        <li><input type="checkbox" id="b1" data-key="b1" /><label for="b1"><span class="tag tag-bug">Bug #5</span> 참가자 앱에서 Zoom 초대 링크 → <strong>보호 참가</strong> 클릭 시 회의 창이 열리는지 확인</label></li>
+        <li><input type="checkbox" id="b2" data-key="b2" /><label for="b2"><span class="tag tag-bug">IPC</span> 참가자 DevTools(F12, dev 모드)에서 <code>open-meeting-inapp</code> 채널 에러 없는지 확인</label></li>
+        <li><input type="checkbox" id="b3" data-key="b3" /><label for="b3"><span class="tag tag-bug">링크</span> <code>https://us06web.zoom.us/j/숫자?pwd=...</code> 형식 링크가 wc/join URL로 변환되는지 확인</label></li>
+        <li><input type="checkbox" id="b4" data-key="b4" /><label for="b4"><span class="tag tag-bug">호스트</span> Desktop 트레이 → 정보 → 버전 <strong>v1.6.1</strong>, 문구 <strong>Zoom 전용</strong> 표시 확인</label></li>
+        <li><input type="checkbox" id="b5" data-key="b5" /><label for="b5"><span class="tag tag-bug">호스트</span> UI에 "웹캔" 오타 없이 <strong>웹캠</strong>으로 표시되는지 확인</label></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2><span class="num">04</span> 테스트 시나리오 (실전 연습)</h2>
+      <ul class="checklist" id="list-tests">
+        <li><input type="checkbox" id="t1" data-key="t1" /><label for="t1"><span class="tag tag-test">1</span> Zoom에서 테스트 회의 1개 생성 (초대 링크 복사)</label></li>
+        <li><input type="checkbox" id="t2" data-key="t2" /><label for="t2"><span class="tag tag-test">2</span> 참가자 앱 → 회의 참가 → 링크 붙여넣기 → 보호 참가</label></li>
+        <li><input type="checkbox" id="t3" data-key="t3" /><label for="t3"><span class="tag tag-test">3</span> 호스트 앱 → 같은 링크로 보호 참가 (또는 회의 ID + 비밀번호)</label></li>
+        <li><input type="checkbox" id="t4" data-key="t4" /><label for="t4"><span class="tag tag-test">4</span> 회의 중 OBS 등 녹화 프로그램 실행 → 블랙아웃/차단 동작 확인</label></li>
+        <li><input type="checkbox" id="t5" data-key="t5" /><label for="t5"><span class="tag tag-test">5</span> 회의 종료 버튼 → 창 닫힘 · 에러 없음 확인</label></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2><span class="num">05</span> IPC 채널 참고 (수정 시 맞춰야 할 이름)</h2>
+      <table>
+        <thead><tr><th>preload (호출)</th><th>main.js (등록)</th></tr></thead>
+        <tbody>
+          <tr><td><code>open-meeting-inapp</code></td><td><code>open-meeting-inapp</code></td></tr>
+          <tr><td><code>close-meeting-inapp</code></td><td><code>close-meeting-inapp</code></td></tr>
+          <tr><td><code>hide-meeting-view</code></td><td><code>hide-meeting-view</code></td></tr>
+        </tbody>
+      </table>
+      <p class="note">이름이 <code>open-meeting-in-app</code>처럼 다르면 회의 창이 안 열립니다.</p>
+    </section>
+
+    <section class="card">
+      <h2><span class="num">06</span> 버그 발견 시 기록 양식</h2>
+      <pre id="reportTemplate">[VIDLOCK 버그 리포트]
+앱: 호스트 / 참가자
+버전: v1.6.1 / v1.0.0
+증상:
+재현 순서:
+1.
+2.
+3.
+기대 결과:
+실제 결과:
+스크린샷/콘솔 에러:</pre>
+      <div class="btn-row">
+        <button class="btn btn-acc" type="button" id="copyReport">양식 복사</button>
+      </div>
+      <p class="note" id="copyMsg"></p>
+    </section>
+
+    <section class="card">
+      <h2><span class="num">07</span> 수정 완료 후 검증</h2>
+      <ul class="checklist" id="list-done">
+        <li><input type="checkbox" id="d1" data-key="d1" /><label for="d1"><span class="tag tag-ok">✓</span> npm start 로 두 앱 모두 재실행 후 동일 시나리오 통과</label></li>
+        <li><input type="checkbox" id="d2" data-key="d2" /><label for="d2"><span class="tag tag-ok">✓</span> HANDOFF.md 알려진 버그 항목 업데이트</label></li>
+        <li><input type="checkbox" id="d3" data-key="d3" /><label for="d3"><span class="tag tag-ok">✓</span> Cursor/개발자에게 증상·수정 내용 전달</label></li>
+      </ul>
+    </section>
+  </div>
+
+  <script>
+    const STORAGE = "vidlock-admin-practice-v1";
+    const boxes = document.querySelectorAll('.checklist input[type="checkbox"]');
+    const bar = document.getElementById("progressBar");
+    const countEl = document.getElementById("progressCount");
+    const totalEl = document.getElementById("progressTotal");
+
+    function load() {
+      try { return JSON.parse(localStorage.getItem(STORAGE) || "{}"); } catch { return {}; }
+    }
+    function save(state) { localStorage.setItem(STORAGE, JSON.stringify(state)); }
+
+    function updateProgress() {
+      const total = boxes.length;
+      const done = [...boxes].filter((b) => b.checked).length;
+      totalEl.textContent = total;
+      countEl.textContent = done;
+      bar.style.width = total ? (done / total * 100) + "%" : "0%";
+      boxes.forEach((b) => {
+        b.nextElementSibling.classList.toggle("done", b.checked);
+      });
+    }
+
+    const state = load();
+    boxes.forEach((b) => {
+      if (state[b.dataset.key]) b.checked = true;
+      b.addEventListener("change", () => {
+        state[b.dataset.key] = b.checked;
+        save(state);
+        updateProgress();
+      });
+    });
+    updateProgress();
+
+    document.getElementById("resetChecks").addEventListener("click", () => {
+      if (!confirm("체크리스트를 모두 초기화할까요?")) return;
+      localStorage.removeItem(STORAGE);
+      boxes.forEach((b) => { b.checked = false; });
+      updateProgress();
+    });
+
+    document.getElementById("copyReport").addEventListener("click", async () => {
+      const t = document.getElementById("reportTemplate").textContent;
+      try {
+        await navigator.clipboard.writeText(t);
+        document.getElementById("copyMsg").textContent = "복사되었습니다. 메모장·카톡에 붙여넣으세요.";
+      } catch {
+        document.getElementById("copyMsg").textContent = "복사 실패 — 텍스트를 직접 선택해 복사하세요.";
+      }
+    });
+  </script>
+</body>
+</html>
