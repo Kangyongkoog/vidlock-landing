@@ -200,6 +200,9 @@
       display: grid; grid-template-columns: 1fr 1fr;
       gap: 28px; margin-top: 40px;
     }
+    @media (max-width: 900px) {
+      .problem-grid { grid-template-columns: 1fr; }
+    }
     .problem-item h3 {
       font-family: var(--font-display); font-size: 1.15rem;
       letter-spacing: -0.02em; margin-bottom: 8px;
@@ -359,10 +362,10 @@
       <div class="hero-content">
         <p class="hero-brand"><span>VIDLOCK</span></p>
         <h1>Zoom 회의 녹화를 막는 프로그램을, 지금 만들고 있습니다.</h1>
-        <p class="lead">와풀 AI가 개발 중인 실시간 녹화 차단 소프트웨어입니다. 정식 출시 전, 함께할 유료 사전 구독자를 모집합니다.</p>
+        <p class="lead">와풀 AI가 개발 중인 실시간 녹화·촬영 차단 소프트웨어입니다. PC 녹화뿐 아니라, 웹캠 AI로 폰 촬영도 감지합니다. 정식 출시 전 유료 사전 구독자를 모집합니다.</p>
         <div class="cta-row">
           <a class="btn btn-primary" href="#subscribe">유료 사전 구독 신청</a>
-          <a class="btn btn-ghost" href="#building">무엇을 만드는지</a>
+          <a class="btn btn-ghost" href="manual.html">사용 설명서</a>
         </div>
       </div>
     </section>
@@ -378,6 +381,7 @@
               <li>호스트용 Desktop 앱 + 참가자용 무료 앱 구조</li>
               <li>Zoom 초대 링크로 보호 모드 참가</li>
               <li>녹화 시도 시 OS 레벨 화면 잠금</li>
+              <li>웹캠 AI로 폰·카메라 외부 촬영 감지 (블랙아웃)</li>
               <li>상표 출원 진행 중 · 와풀 AI 교육연구소 제작</li>
             </ul>
           </div>
@@ -403,6 +407,14 @@
             <h3>기존 DRM의 한계</h3>
             <p>파일 암호화는 VOD에 강하고, 실시간 화상회의 보호에는 약합니다.</p>
           </article>
+          <article class="problem-item reveal">
+            <h3>PC 밖 폰 촬영</h3>
+            <p>모니터를 휴대폰으로 찍는 유출도 있습니다. VIDLOCK은 웹캠 AI로 폰·카메라를 감지하면 화면을 잠급니다.</p>
+          </article>
+          <article class="problem-item reveal">
+            <h3>학교·시험 (로드맵)</h3>
+            <p>시험 모드로 폰 촬영·다른 창 전환을 더 강하게 막는 기능을 준비 중입니다. 완전 컨닝 차단이 아니라, 화면 유출·촬영 억제 + 보조 감독입니다.</p>
+          </article>
         </div>
       </div>
     </section>
@@ -425,8 +437,8 @@
           </article>
           <article class="step reveal">
             <div class="step-num">03</div>
-            <h3>녹화 시도 차단</h3>
-            <p>녹화·캡처가 감지되면 화면을 잠가 내용이 남지 않게 합니다.</p>
+            <h3>녹화·촬영 시도 차단</h3>
+            <p>PC 녹화 프로그램과, 웹캠에 잡힌 폰·카메라 촬영을 감지해 화면을 잠급니다.</p>
           </article>
         </div>
       </div>
@@ -444,6 +456,7 @@
               <li>초기 구독 기간 할인 협의 가능</li>
               <li>기능 우선순위 피드백 반영</li>
               <li>교육기관·소규모 팀 시범 운영 우선</li>
+              <li>학교 시험 모드 로드맵 의견 반영 가능</li>
             </ul>
           </div>
           <div class="reveal">
@@ -496,8 +509,14 @@
             <ul class="who-list">
               <li>Zoom으로 유료 강의·컨설팅을 하는 강사·학원</li>
               <li>내부 회의 화면 유출이 걱정인 중소기업</li>
+              <li>폰 촬영·화면 유출을 줄이고 싶은 교육기관</li>
               <li>출시 전 제품을 먼저 써보고 싶은 보안 구독자</li>
             </ul>
+            <p style="margin-top:20px;font-size:0.9rem;color:rgba(255,255,255,0.65)">
+              <a href="manual.html" style="color:#9fe8dc;font-weight:600">사용 설명서</a>
+              ·
+              <a href="admin-practice.html" style="color:#9fe8dc;font-weight:600">관리자 버그 연습</a>
+            </p>
           </div>
         </div>
       </div>
@@ -507,7 +526,7 @@
   <footer>
     <div class="wrap footer-inner">
       <div><strong>VIDLOCK</strong> · 와풀 AI 교육연구소 · 개발 중</div>
-      <div>사업자 477-14-02961 · 대표 강용국 · 상표 출원 중 · <a href="admin-practice.html" style="color:#9fe8dc">관리자 버그 연습</a></div>
+      <div>사업자 477-14-02961 · 대표 강용국 · <a href="manual.html" style="color:#9fe8dc">사용 설명서</a> · <a href="admin-practice.html" style="color:#9fe8dc">관리자 연습</a></div>
     </div>
   </footer>
 

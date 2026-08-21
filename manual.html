@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VIDLOCK 사용 설명서</title>
+  <meta name="description" content="VIDLOCK 호스트·참가자 앱 설치, Zoom 보호 참가, 녹화 차단, AI 폰 촬영 감지 사용 설명서" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f4f8fa; --card: #fff; --ink: #0c1b2a; --mut: #4a6274;
+      --line: rgba(12,27,42,0.1); --teal: #0d9f8c; --teal-deep: #08786a;
+      --warn: #c45c26; --err: #c0392b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "IBM Plex Sans KR", sans-serif; background: var(--bg); color: var(--ink); line-height: 1.7; }
+    a { color: var(--teal-deep); }
+    .wrap { width: min(860px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 72px; }
+    .topbar {
+      display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center;
+      margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid var(--line);
+    }
+    .brand { font-weight: 700; font-size: 1.1rem; letter-spacing: -0.03em; color: var(--ink); text-decoration: none; }
+    .nav-links { display: flex; flex-wrap: wrap; gap: 8px; }
+    .nav-links a {
+      font-size: 0.85rem; font-weight: 600; text-decoration: none; color: var(--ink);
+      background: var(--card); border: 1px solid var(--line); padding: 8px 12px; border-radius: 999px;
+    }
+    h1 { font-size: clamp(1.6rem, 4vw, 2.1rem); letter-spacing: -0.04em; margin-bottom: 8px; }
+    .lead { color: var(--mut); margin-bottom: 28px; max-width: 40em; }
+    .toc {
+      background: var(--card); border: 1px solid var(--line); padding: 18px 20px; margin-bottom: 28px;
+    }
+    .toc h2 { font-size: 0.95rem; margin-bottom: 10px; }
+    .toc ol { margin-left: 1.2em; color: var(--mut); font-size: 0.95rem; }
+    .toc li { margin: 4px 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      padding: 24px 22px; margin-bottom: 16px;
+    }
+    section h2 {
+      font-size: 1.15rem; letter-spacing: -0.02em; margin-bottom: 12px;
+      padding-bottom: 8px; border-bottom: 1px solid var(--line);
+    }
+    section h3 { font-size: 1rem; margin: 18px 0 8px; }
+    p, li { font-size: 0.95rem; color: var(--ink); }
+    ul, ol { margin: 8px 0 8px 1.25em; }
+    li { margin: 5px 0; color: var(--mut); }
+    li strong { color: var(--ink); }
+    .note {
+      margin-top: 12px; padding: 12px 14px; background: #eef7f5;
+      border-left: 3px solid var(--teal); font-size: 0.88rem; color: var(--mut);
+    }
+    .warn {
+      margin-top: 12px; padding: 12px 14px; background: #fff6f0;
+      border-left: 3px solid var(--warn); font-size: 0.88rem; color: var(--mut);
+    }
+    pre {
+      font-family: "JetBrains Mono", monospace; font-size: 0.8rem;
+      background: #0c1b2a; color: #d7e8f0; padding: 14px; overflow-x: auto; margin: 10px 0;
+    }
+    code { font-family: "JetBrains Mono", monospace; font-size: 0.82rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 10px 0; }
+    th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { color: var(--mut); font-weight: 600; }
+    .tag {
+      display: inline-block; font-size: 0.7rem; font-weight: 700;
+      padding: 2px 7px; border-radius: 3px; margin-right: 4px;
+      background: rgba(13,159,140,0.12); color: var(--teal-deep);
+    }
+    .tag-plan { background: rgba(196,92,38,0.12); color: var(--warn); }
+    footer { margin-top: 24px; font-size: 0.82rem; color: var(--mut); text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <a class="brand" href="index.html">VIDLOCK</a>
+      <div class="nav-links">
+        <a href="index.html">소개</a>
+        <a href="admin-practice.html">관리자 연습</a>
+        <a href="#top">맨 위</a>
+      </div>
+    </div>
+
+    <h1 id="top">VIDLOCK 사용 설명서</h1>
+    <p class="lead">호스트(관리자)용 Desktop과 참가자용 Participant 앱의 설치·실행·Zoom 보호 참가·녹화 차단·AI 폰 촬영 감지까지 안내합니다. 버전: Desktop v1.6.1 / Participant v1.0.0</p>
+
+    <nav class="toc" aria-label="목차">
+      <h2>목차</h2>
+      <ol>
+        <li><a href="#s1">앱이란 / 역할 구분</a></li>
+        <li><a href="#s2">설치와 실행</a></li>
+        <li><a href="#s3">Zoom 회의 보호 참가</a></li>
+        <li><a href="#s4">녹화·캡처 차단</a></li>
+        <li><a href="#s5">AI 폰·카메라 촬영 감지</a></li>
+        <li><a href="#s6">포렌식 워터마크</a></li>
+        <li><a href="#s7">학교·시험 모드 (로드맵)</a></li>
+        <li><a href="#s8">자주 묻는 질문</a></li>
+      </ol>
+    </nav>
+
+    <section id="s1">
+      <h2>1. 앱이란 / 역할 구분</h2>
+      <p>VIDLOCK은 Zoom 화상회의 중 <strong>화면 녹화·캡처·외부 촬영 시도</strong>를 줄이기 위한 데스크톱 보안 앱입니다.</p>
+      <table>
+        <thead><tr><th>앱</th><th>대상</th><th>역할</th></tr></thead>
+        <tbody>
+          <tr><td><strong>vidlock-desktop</strong></td><td>호스트·강사·관리자</td><td>회의 관리, 보호 모니터링, 설정</td></tr>
+          <tr><td><strong>vidlock-participant</strong></td><td>참가자·수강생</td><td>링크로 보호 참가, 녹화·촬영 차단</td></tr>
+        </tbody>
+      </table>
+      <div class="note">참가자 앱은 무료 배포를 전제로 설계되어 있습니다. 유료는 호스트 라이선스 중심입니다.</div>
+    </section>
+
+    <section id="s2">
+      <h2>2. 설치와 실행</h2>
+      <h3>준비물</h3>
+      <ul>
+        <li>Windows PC (주력)</li>
+        <li>Node.js 18 이상</li>
+        <li>VIDLOCK 소스 폴더 (<code>vidlock-desktop</code>, <code>vidlock-participant</code>)</li>
+      </ul>
+      <h3>실행 방법 A — 배치 파일</h3>
+      <ol>
+        <li>VIDLOCK 폴더에서 <code>시작_호스트.bat</code> 더블클릭 → 관리자 앱</li>
+        <li><code>시작_참가자.bat</code> 더블클릭 → 참가자 앱</li>
+      </ol>
+      <h3>실행 방법 B — 명령어</h3>
+      <pre># 호스트
+cd vidlock-desktop
+npm install
+npm start
+
+# 참가자 (새 터미널)
+cd vidlock-participant
+npm install
+npm start</pre>
+      <div class="warn">웹 랜딩 페이지만으로는 앱이 실행되지 않습니다. 각 PC에서 앱을 설치·실행해야 보호가 적용됩니다.</div>
+    </section>
+
+    <section id="s3">
+      <h2>3. Zoom 회의 보호 참가</h2>
+      <h3>참가자 앱</h3>
+      <ol>
+        <li><strong>💬 회의 참가</strong> 탭으로 이동</li>
+        <li>Zoom 초대 링크 또는 회의 ID 붙여넣기<br>
+          예: <code>https://us06web.zoom.us/j/123...?pwd=...</code></li>
+        <li><strong>🔒 보호 참가</strong> 클릭</li>
+      </ol>
+      <h3>호스트 앱</h3>
+      <ol>
+        <li>Zoom 패널에서 회의 ID/URL 입력 (비밀번호 칸 사용 가능)</li>
+        <li><strong>🔒 보호 참가</strong> 또는 새 회의/로그인 버튼 사용</li>
+      </ol>
+      <div class="note">초대 링크에 <code>pwd=</code>가 있으면 비밀번호를 따로 입력하지 않아도 됩니다. 앱이 웹 참가(<code>wc/join</code>) 주소로 변환해 보호 창에서 엽니다.</div>
+    </section>
+
+    <section id="s4">
+      <h2>4. 녹화·캡처 차단</h2>
+      <ul>
+        <li><span class="tag">OS</span> <strong>setContentProtection</strong> — 녹화 시 해당 창이 검게 나오도록 OS 레벨 보호</li>
+        <li><span class="tag">감지</span> OBS, 반디캠 등 <strong>녹화 프로세스</strong> 주기 감시 → 블랙아웃·경고</li>
+        <li><span class="tag">경고</span> PrintScreen 등 캡처 시도 시 위반 경고 표시</li>
+      </ul>
+      <p>보호가 켜진 상태에서 Zoom을 <strong>VIDLOCK 앱 안</strong>에서 열어야 효과가 큽니다. 일반 브라우저만으로 열면 보호가 약해질 수 있습니다.</p>
+    </section>
+
+    <section id="s5">
+      <h2>5. AI 폰·카메라 촬영 감지</h2>
+      <p>PC <strong>웹캠</strong>으로 주변을 보고, AI가 <strong>휴대폰·카메라</strong>를 감지하면 화면을 잠급니다. (Manus/기존 구현 포함)</p>
+      <h3>켜는 방법</h3>
+      <ol>
+        <li><strong>📷 카메라 감지</strong> 탭 이동</li>
+        <li>웹캠 권한 허용</li>
+        <li><strong>감지 시작</strong> 클릭</li>
+        <li>민감도·간격은 설정에서 조절</li>
+      </ol>
+      <h3>동작</h3>
+      <ul>
+        <li>연속 감지 시 확정 → <strong>블랙아웃</strong></li>
+        <li>위반 경고 + 포렌식 워터마크에 기록</li>
+        <li>장치를 치우면 자동 복구</li>
+      </ul>
+      <div class="warn">
+        <strong>한계:</strong> 웹캠 시야 밖(모니터 뒤·옆) 촬영, 고의로 가린 촬영은 놓칠 수 있습니다.
+        “100% 차단”이 아니라 <strong>감지·차단·경고·추적</strong>으로 이해해 주세요.
+      </div>
+    </section>
+
+    <section id="s6">
+      <h2>6. 포렌식 워터마크</h2>
+      <ol>
+        <li><strong>🔒 보호 / 워터마크</strong> 설정으로 이동</li>
+        <li>참가자 이름 입력</li>
+        <li>투명도 조절 후 활성화</li>
+      </ol>
+      <p>화면에 이름·시간·IP·경고 문구가 반투명으로 표시되어, 촬영·녹화본에 함께 남습니다. Zoom 계정 워터마크 설정 가이드는 호스트 앱에도 안내되어 있습니다.</p>
+    </section>
+
+    <section id="s7">
+      <h2>7. 학교·시험 모드 <span class="tag tag-plan">로드맵</span></h2>
+      <p>지금은 Zoom 회의·강의 유출 방지가 중심입니다. 학교 시험용은 아래를 <strong>추가 개발</strong>할 예정입니다.</p>
+      <table>
+        <thead><tr><th>목표</th><th>현재</th><th>시험 모드(예정)</th></tr></thead>
+        <tbody>
+          <tr><td>화면 녹화 차단</td><td>✅</td><td>✅ 유지</td></tr>
+          <tr><td>폰으로 문제 촬영</td><td>△ 웹캠 시야 내</td><td>상시 감지 + 로그 강화</td></tr>
+          <tr><td>다른 탭·AI 검색</td><td>△ 일부</td><td>전체화면 잠금·다른 앱 차단</td></tr>
+          <tr><td>다른 기기 AI 풀이</td><td>❌</td><td>감독·2카메라 등 별도 정책</td></tr>
+        </tbody>
+      </table>
+      <div class="note">펀딩·학교 도입 시 문구는 “컨닝 완전 차단”보다 “화면 유출·폰 촬영 억제 + 시험 보조 감독”이 정확합니다.</div>
+    </section>
+
+    <section id="s8">
+      <h2>8. 자주 묻는 질문</h2>
+      <h3>Q. 다른 사람 PC에서도 링크로 앱이 열리나요?</h3>
+      <p>소개·설명서 페이지는 링크로 열립니다. <strong>앱 자체</strong>는 그 PC에 설치·실행해야 합니다.</p>
+      <h3>Q. 보호 참가를 눌렀는데 회의가 안 열려요.</h3>
+      <p>참가자 앱 IPC 채널명(<code>open-meeting-inapp</code>)이 맞는지, 링크 형식이 Zoom인지 확인하세요. <a href="admin-practice.html">관리자 버그 연습 페이지</a> 체크리스트를 따라 주세요.</p>
+      <h3>Q. Mac에서도 되나요?</h3>
+      <p>코드상 일부 지원이 있으나, 주력 테스트·배포는 Windows입니다. Mac은 로드맵에 있습니다.</p>
+      <h3>Q. 문의는?</h3>
+      <p>사전 구독·도입 문의는 <a href="index.html#subscribe">소개 페이지 신청 폼</a> 또는 와풀 AI 교육연구소로 연락해 주세요.</p>
+    </section>
+
+    <footer>
+      VIDLOCK 사용 설명서 · 와풀 AI 교육연구소 · © 2026 · 개발 중 문서
+    </footer>
+  </div>
+</body>
+</html>
