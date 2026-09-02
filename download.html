@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VIDLOCK 소스코드 다운로드</title>
+  <meta name="description" content="VIDLOCK 소스코드 ZIP 다운로드 — 다른 AI·개발자에게 작업 인계용" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+  <style>
+    :root { --bg:#0c1b2a; --card:#122231; --txt:#e8f0f4; --mut:#8fa3b3; --teal:#0d9f8c; --line:rgba(255,255,255,.1); }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:"IBM Plex Sans KR",sans-serif; background:var(--bg); color:var(--txt); line-height:1.7; }
+    a { color:#9fe8dc; }
+    .wrap { width:min(760px,calc(100% - 32px)); margin:0 auto; padding:36px 0 64px; }
+    .top { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:28px; flex-wrap:wrap; }
+    .brand { color:#fff; font-weight:700; text-decoration:none; }
+    h1 { font-size:clamp(1.5rem,4vw,2rem); letter-spacing:-.03em; margin-bottom:8px; }
+    .lead { color:var(--mut); margin-bottom:24px; }
+    .card { background:var(--card); border:1px solid var(--line); padding:24px 22px; margin-bottom:16px; }
+    .card h2 { font-size:1.05rem; margin-bottom:12px; }
+    .btn {
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      background:var(--teal); color:#fff; font-weight:700; text-decoration:none;
+      padding:16px 24px; border-radius:10px; font-size:1rem; margin:8px 0;
+    }
+    .btn:hover { filter:brightness(1.08); }
+    .meta { font-size:.85rem; color:var(--mut); margin-top:8px; }
+    ul, ol { margin:8px 0 8px 1.2em; color:var(--mut); font-size:.95rem; }
+    li { margin:6px 0; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <a class="brand" href="index.html">VIDLOCK</a>
+      <div>
+        <a href="manual.html">사용 설명서</a> ·
+        <a href="admin-practice.html">관리자 연습</a>
+      </div>
+    </div>
+
+    <h1>소스코드 다운로드</h1>
+    <p class="lead">다른 AI(ChatGPT, Claude, Cursor 등)나 개발자에게 작업을 넘길 때 이 ZIP을 받아 사용하세요.</p>
+
+    <section class="card">
+      <h2>📦 최신 소스 ZIP</h2>
+      <a class="btn" href="downloads/VIDLOCK-source-latest.zip" download>VIDLOCK-source-latest.zip 다운로드</a>
+      <p class="meta">포함: vidlock-desktop, vidlock-participant, landing, HANDOFF 문서, 실행 배치 파일 · node_modules 제외 (압축 해제 후 npm install 필요)</p>
+    </section>
+
+    <section class="card">
+      <h2>다른 AI에게 줄 때 (복사용)</h2>
+      <ol>
+        <li>위 ZIP을 다운로드해 압축 해제</li>
+        <li>폴더를 Cursor/VS Code에서 열기</li>
+        <li><code>HANDOFF.md</code>를 먼저 읽게 하기</li>
+        <li>호스트: <code>cd vidlock-desktop && npm install && npm start</code></li>
+        <li>참가자: <code>cd vidlock-participant && npm install && npm start</code></li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>ZIP 안 구성</h2>
+      <ul>
+        <li><strong>vidlock-desktop/</strong> — 호스트(관리자) v1.6.1</li>
+        <li><strong>vidlock-participant/</strong> — 참가자 v1.0.0</li>
+        <li><strong>landing/</strong> — 소개·설명서·관리자 연습 페이지</li>
+        <li><strong>HANDOFF.md</strong> — 버그·테스트·IPC 채널 정리</li>
+        <li><strong>시작_호스트.bat</strong> / <strong>시작_참가자.bat</strong></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>비공개 Git (선택)</h2>
+      <p style="color:var(--mut);font-size:.95rem">GitHub 비공개 저장소에도 동기화되어 있습니다. 접근 권한이 있는 계정으로 clone 할 수 있습니다.</p>
+      <p class="meta" style="margin-top:8px">저장소: github.com/Kangyongkoog/VIDLOCK (Private)</p>
+    </section>
+  </div>
+</body>
+</html>
