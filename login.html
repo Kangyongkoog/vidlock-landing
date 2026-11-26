@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>VIDLOCK — 스마트 로그인</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet" />
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js" crossorigin="anonymous"></script>
+<style>
+  /* ===== 키 설정: 발급받은 키를 넣으면 실제 소셜 로그인으로 동작, 비어 있으면 데모 모드 ===== */
+  :root{--bg:#1a1a1a;--card:#222;--line:#3a3a3a;--teal:#0d9f8c;--txt:#fff;--mut:#bbb}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"IBM Plex Sans KR",sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:40px 16px}
+  .brand{font-weight:800;letter-spacing:-.04em;color:#9fe8dc;margin-bottom:6px;text-decoration:none}
+  h1{font-size:2rem;margin-bottom:22px}
+  .box{width:100%;max-width:480px}
+  .tabs{display:flex;border-bottom:1px solid var(--line);margin-bottom:24px}
+  .tab{flex:1;text-align:center;padding:12px 0;font-size:1.05rem;color:var(--mut);cursor:pointer;border-radius:8px 8px 0 0;user-select:none}
+  .tab.on{background:#333;color:#fff;font-weight:600}
+  .pane{display:none}.pane.on{display:block}
+  .help{text-align:right;font-size:.85rem;font-weight:600;margin-bottom:10px}
+  input{width:100%;padding:16px 22px;background:#3a3a3a;border:none;border-radius:4px;color:#fff;font-size:1rem;margin-bottom:10px;font-family:inherit}
+  input::placeholder{color:#999}
+  .sbtn{display:flex;align-items:center;width:100%;height:48px;border:none;border-radius:2px;margin-bottom:10px;cursor:pointer;font-size:1rem;font-family:inherit;overflow:hidden}
+  .sbtn .ic{width:52px;height:100%;display:flex;align-items:center;justify-content:center;border-right:1px solid rgba(0,0,0,.15);font-weight:900;font-size:1.3rem}
+  .sbtn .lb{flex:1;text-align:center}
+  .naver{background:#03c75a;color:#fff}.kakao{background:#fee500;color:#191919}
+  .bio{background:#fff;color:#8a1f5a;border:1px solid #8a1f5a}
+  .main{background:var(--teal);color:#fff;justify-content:center;font-weight:700}
+  .row{display:flex;justify-content:space-between;align-items:center;font-size:.9rem;margin:14px 0 26px}
+  .row label{display:flex;gap:6px;align-items:center;cursor:pointer}
+  .row input{width:auto;margin:0}
+  .row a{color:#fff;text-decoration:none;cursor:pointer}
+  ul{font-size:.82rem;color:#ddd;padding-left:16px;line-height:1.8}
+  .msg{display:none;padding:12px;border-radius:6px;margin-bottom:14px;font-size:.9rem;text-align:center}
+  .msg.ok{display:block;background:#0d3b34;border:1px solid var(--teal);color:#9fe8dc}
+  .msg.err{display:block;background:#3b1414;border:1px solid #c0392b;color:#ff9a8a}
+  .welcome{display:none;text-align:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:32px 22px}
+  .welcome h2{margin-bottom:8px}.welcome p{color:var(--mut);margin-bottom:20px}
+  .welcome a{display:block;margin:8px 0;padding:13px;border-radius:8px;background:#333;color:#fff;text-decoration:none}
+  .welcome a.p{background:var(--teal)}
+  .back{margin-top:26px;color:var(--mut);font-size:.88rem;text-decoration:none}
+</style>
+</head>
+<body>
+<a class="brand" href="index.html">VIDLOCK</a>
+<h1 id="title">스마트 로그인</h1>
+
+<div class="box" id="loginBox">
+  <div class="tabs">
+    <div class="tab" data-t="normal">일반로그인</div>
+    <div class="tab on" data-t="smart">스마트로그인</div>
+    <div class="tab" data-t="cert">공동인증서</div>
+  </div>
+  <div id="msg" class="msg"></div>
+
+  <!-- 일반 로그인 -->
+  <div class="pane" id="pane-normal">
+    <input id="nId" placeholder="아이디 또는 이메일" />
+    <input id="nPw" type="password" placeholder="비밀번호" />
+    <button class="sbtn main" onclick="normalLogin()">로그인</button>
+  </div>
+
+  <!-- 스마트 로그인 -->
+  <div class="pane on" id="pane-smart">
+    <div class="help">인증서 로그인 안내</div>
+    <input id="sId" placeholder="아이디" />
+    <button class="sbtn naver" onclick="naverLogin()"><span class="ic">N</span><span class="lb">네이버 로그인</span></button>
+    <button class="sbtn kakao" onclick="kakaoLogin()"><span class="ic">💬</span><span class="lb">카카오 로그인</span></button>
+    <button class="sbtn bio" onclick="bioLogin()"><span class="ic">☝</span><span class="lb">생체인증 로그인</span></button>
+  </div>
+
+  <!-- 공동인증서 -->
+  <div class="pane" id="pane-cert">
+    <p style="color:var(--mut);line-height:1.8;margin-bottom:16px">공동인증서 로그인은 정식 버전(기관·학교 계약)에서 제공됩니다.<br>현재는 스마트로그인(네이버·카카오·생체인증)을 이용해 주세요.</p>
+    <button class="sbtn main" onclick="selectTab('smart')">스마트로그인으로 이동</button>
+  </div>
+
+  <div class="row">
+    <label><input type="checkbox" id="saveId" /> 아이디 저장</label>
+    <a onclick="alert('가입 시 사용한 이메일로 문의해 주세요: 와풀 AI')">아이디 찾기</a>
+    <a onclick="alert('임시 비밀번호는 관리자(와풀 AI)에게 요청해 주세요.')">임시비밀번호</a>
+  </div>
+  <ul>
+    <li>인증 수단 별 최초 로그인 시 앱 설치 및 정보 등록이 필요합니다.</li>
+    <li>VIDLOCK은 생체 정보를 수집·저장하지 않습니다. (기기 내 Windows Hello / 지문 인증만 사용)</li>
+    <li>다른 브라우저에서 '동일 계정'으로 접속할 경우 현재 창이 닫히니 유의하시기 바랍니다.</li>
+  </ul>
+</div>
+
+<div class="box welcome" id="welcome">
+  <h2 id="wName">환영합니다</h2>
+  <p id="wVia"></p>
+  <a class="p" href="download.html">📦 VIDLOCK 프로그램 다운로드</a>
+  <a href="manual.html">📖 사용 설명서</a>
+  <a href="admin-practice.html">🛠 관리자 연습</a>
+  <a href="#" onclick="logout();return false;" style="background:#3b1414">로그아웃</a>
+</div>
+
+<a class="back" href="index.html">← 홈으로</a>
+
+<script>
+// ===== 실제 키를 발급받으면 여기에 입력 =====
+const KAKAO_JS_KEY   = '';   // developers.kakao.com → 앱 → JavaScript 키
+const NAVER_CLIENT_ID = '';  // developers.naver.com → 애플리케이션 → Client ID
+const REDIRECT = location.origin + location.pathname;
+
+const $ = id => document.getElementById(id);
+function selectTab(t){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.t===t));
+  document.querySelectorAll('.pane').forEach(x=>x.classList.toggle('on',x.id==='pane-'+t));
+  $('title').textContent = {normal:'일반 로그인',smart:'스마트 로그인',cert:'공동인증서 로그인'}[t];
+}
+document.querySelectorAll('.tab').forEach(x=>x.onclick=()=>selectTab(x.dataset.t));
+function show(text,ok){ const m=$('msg'); m.className='msg '+(ok?'ok':'err'); m.textContent=text; }
+function getId(){ return ($('sId').value||$('nId').value||'').trim(); }
+
+function done(name, via){
+  if($('saveId').checked) localStorage.setItem('vl_saved_id', getId());
+  localStorage.setItem('vl_user', JSON.stringify({name, via, at:Date.now()}));
+  render();
+}
+function render(){
+  const u = JSON.parse(localStorage.getItem('vl_user')||'null');
+  $('loginBox').style.display = u?'none':'block';
+  $('welcome').style.display = u?'block':'none';
+  $('title').textContent = u?'로그인 완료':'스마트 로그인';
+  if(u){ $('wName').textContent = u.name+' 님, 환영합니다'; $('wVia').textContent = u.via+'(으)로 로그인됨'; }
+}
+function logout(){ localStorage.removeItem('vl_user'); if(window.Kakao&&Kakao.Auth&&Kakao.isInitialized()) try{Kakao.Auth.logout();}catch(e){} render(); }
+
+function normalLogin(){
+  if(!$('nId').value||!$('nPw').value) return show('아이디와 비밀번호를 입력하세요.');
+  done($('nId').value,'일반로그인');
+}
+
+// ---- 네이버 ----
+function naverLogin(){
+  if(!NAVER_CLIENT_ID){ return done(getId()||'네이버 사용자','네이버(데모)'); }
+  const state = Math.random().toString(36).slice(2);
+  sessionStorage.setItem('naver_state', state);
+  location.href = 'https://nid.naver.com/oauth2.0/authorize?response_type=token&client_id='+NAVER_CLIENT_ID+
+    '&redirect_uri='+encodeURIComponent(REDIRECT)+'&state='+state;
+}
+// 네이버 콜백(#access_token=...) 처리
+(function(){
+  const h = new URLSearchParams(location.hash.slice(1));
+  if(h.get('access_token') && h.get('state')===sessionStorage.getItem('naver_state')){
+    history.replaceState(null,'',location.pathname);
+    done('네이버 사용자','네이버');
+  }
+})();
+
+// ---- 카카오 ----
+function kakaoLogin(){
+  if(!KAKAO_JS_KEY || !window.Kakao){ return done(getId()||'카카오 사용자','카카오(데모)'); }
+  if(!Kakao.isInitialized()) Kakao.init(KAKAO_JS_KEY);
+  Kakao.Auth.authorize({ redirectUri: REDIRECT });
+}
+(function(){
+  const code = new URLSearchParams(location.search).get('code');
+  if(code){ history.replaceState(null,'',location.pathname); done('카카오 사용자','카카오'); }
+})();
+
+// ---- 생체인증 (Windows Hello / 지문, WebAuthn) ----
+const b64 = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
+const unb64 = s => Uint8Array.from(atob(s), c=>c.charCodeAt(0));
+async function bioLogin(){
+  if(!window.PublicKeyCredential) return show('이 브라우저는 생체인증을 지원하지 않습니다. Chrome/Edge를 이용하세요.');
+  const id = getId(); if(!id) return show('아이디를 먼저 입력하세요.');
+  const key = 'vl_bio_'+id, saved = localStorage.getItem(key);
+  const challenge = crypto.getRandomValues(new Uint8Array(32));
+  try{
+    if(!saved){
+      const cred = await navigator.credentials.create({publicKey:{
+        challenge, rp:{name:'VIDLOCK'}, user:{id:new TextEncoder().encode(id), name:id, displayName:id},
+        pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],
+        authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required'}, timeout:60000 }});
+      localStorage.setItem(key, b64(cred.rawId));
+      show('생체인증이 이 기기에 등록되었습니다. 로그인합니다.', true);
+    } else {
+      await navigator.credentials.get({publicKey:{ challenge, allowCredentials:[{type:'public-key',id:unb64(saved)}], userVerification:'required', timeout:60000 }});
+    }
+    done(id,'생체인증');
+  }catch(e){ show('생체인증이 취소되었거나 실패했습니다.'); }
+}
+
+const sid = localStorage.getItem('vl_saved_id');
+if(sid){ $('sId').value = sid; $('nId').value = sid; $('saveId').checked = true; }
+render();
+</script>
+</body>
+</html>

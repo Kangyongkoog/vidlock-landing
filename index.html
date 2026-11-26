@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VIDLOCK — Zoom 화상회의 실시간 녹화·촬영 차단 솔루션</title>
+  <meta name="description" content="와풀 AI의 Zoom 화상회의 실시간 녹화·캡처·폰 촬영 차단 소프트웨어 VIDLOCK. 지금 1주 체험권(4,900원 · 인증 시 전액 환급) 및 구독자를 모집합니다." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0c1b2a;
+      --ink-soft: #243447;
+      --mist: #e8f1f4;
+      --paper: #f4f8fa;
+      --teal: #0d9f8c;
+      --teal-deep: #08786a;
+      --warn: #c45c26;
+      --white: #ffffff;
+      --shadow: 0 24px 60px rgba(12, 27, 42, 0.14);
+      --font-display: "Bricolage Grotesque", "IBM Plex Sans KR", sans-serif;
+      --font-body: "IBM Plex Sans KR", sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+
+    .nav {
+      position: absolute; top: 0; left: 0; right: 0; z-index: 20; padding: 22px 0;
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      width: min(1120px, calc(100% - 40px)); margin: 0 auto;
+    }
+    .nav-brand {
+      font-family: var(--font-display); font-weight: 800;
+      letter-spacing: -0.04em; font-size: 1.15rem; color: var(--white);
+    }
+    .nav-actions {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .nav-login {
+      font-size: 0.9rem; font-weight: 600; color: var(--white);
+      padding: 10px 16px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.4);
+      transition: all 0.25s ease;
+    }
+    .nav-login:hover { background: rgba(255, 255, 255, 0.15); border-color: var(--white); }
+    .nav-cta {
+      font-size: 0.9rem; font-weight: 600; color: var(--ink);
+      background: var(--white); padding: 10px 18px; border-radius: 999px;
+      transition: transform 0.25s ease, background 0.25s ease;
+    }
+    .nav-cta:hover { transform: translateY(-1px); background: var(--mist); }
+
+    .hero {
+      position: relative; min-height: 100vh; min-height: 100dvh;
+      display: grid; align-items: end; color: var(--white); overflow: hidden;
+      background:
+        radial-gradient(ellipse 80% 60% at 70% 40%, rgba(13, 159, 140, 0.35), transparent 60%),
+        linear-gradient(160deg, #07131f 0%, #0c2438 45%, #0a3d38 100%);
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(ellipse at 60% 40%, black 20%, transparent 75%);
+      animation: gridDrift 28s linear infinite;
+    }
+    @keyframes gridDrift {
+      from { transform: translateY(0); }
+      to { transform: translateY(64px); }
+    }
+    .hero-visual {
+      position: absolute; right: -3%; top: 11%;
+      width: min(58vw, 740px); aspect-ratio: 4 / 3;
+      border-radius: 18px;
+      border: 1px solid rgba(159, 232, 220, 0.22);
+      background:
+        linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'%3E%3Crect width='800' height='600' rx='18' fill='%23071521'/%3E%3Crect x='28' y='24' width='744' height='44' rx='10' fill='%230d2233' stroke='%231d4a5c'/%3E%3Ccircle cx='54' cy='46' r='7' fill='%23ff3b5c'/%3E%3Ccircle cx='76' cy='46' r='7' fill='%23ffb000'/%3E%3Ccircle cx='98' cy='46' r='7' fill='%2310b981'/%3E%3Ctext x='124' y='51' fill='%239fe8dc' font-family='Arial' font-size='14' font-weight='700'%3EVIDLOCK SHIELD v1.6 · setContentProtection: ON%3C/text%3E%3Crect x='590' y='33' width='164' height='26' rx='13' fill='%230d9f8c'/%3E%3Ctext x='612' y='50' fill='white' font-family='Arial' font-size='12' font-weight='700'%3EAI CAMERA GUARD%3C/text%3E%3Crect x='28' y='84' width='480' height='370' rx='14' fill='%230e2638' stroke='%231d4a5c' stroke-width='2'/%3E%3Ccircle cx='150' cy='210' r='44' fill='%230d9f8c' opacity='0.35'/%3E%3Ccircle cx='270' cy='210' r='44' fill='%230d9f8c' opacity='0.25'/%3E%3Ccircle cx='390' cy='210' r='44' fill='%230d9f8c' opacity='0.25'/%3E%3Ctext x='80' y='140' fill='%23ffffff' opacity='0.14' font-family='monospace' font-size='15' font-weight='700' transform='rotate(-12 200 180)'%3E%ED%99%8D%EA%B8%B8%EB%8F%99%EB%8B%98 %7C 2026-11-26 %7C FORENSIC WATERMARK%3C/text%3E%3Ctext x='90' y='320' fill='%23ffffff' opacity='0.14' font-family='monospace' font-size='15' font-weight='700' transform='rotate(-12 260 320)'%3E%EB%AC%B4%EB%8B%A8 %EB%85%B9%ED%99%94%C2%B7%EC%BA%A1%EC%B2%98%C2%B7%EC%B4%AC%EC%98%81 %EA%B8%88%EC%A7%80 %7C VIDLOCK%3C/text%3E%3Crect x='118' y='135' width='300' height='210' rx='14' fill='%23050b12' opacity='0.94' stroke='%23ff3b5c' stroke-width='2'/%3E%3Ccircle cx='268' cy='198' r='28' fill='%233a1825'/%3E%3Ctext x='261' y='209' fill='%23ff3b5c' font-family='Arial' font-size='32' font-weight='700'%3E!%3C/text%3E%3Ctext x='172' y='255' fill='%23ff7088' font-family='Arial' font-size='16' font-weight='700'%3E%EB%85%B9%ED%99%94%C2%B7%EC%B4%AC%EC%98%81 %EC%8B%9C%EB%8F%84 %EC%A6%89%EC%8B%9C %EC%B0%A8%EB%8B%A8%3C/text%3E%3Ctext x='164' y='282' fill='%239fb3c8' font-family='Arial' font-size='12'%3EOBS / oCam / %EC%9B%B9%EC%BA%A0 %ED%9C%B4%EB%8C%80%ED%8F%B0 %EA%B0%90%EC%A7%80 %EB%B8%94%EB%9E%99%EC%95%84%EC%9B%83%3C/text%3E%3Crect x='524' y='84' width='248' height='178' rx='14' fill='%230e2638' stroke='%232d8cff' stroke-width='2'/%3E%3Ctext x='546' y='118' fill='white' font-family='Arial' font-size='15' font-weight='700'%3E%EC%98%A8%EB%9D%BC%EC%9D%B8 %EC%8B%9C%ED%97%98 %EB%AA%A8%EB%93%9C ON%3C/text%3E%3Ctext x='546' y='150' fill='%2310b981' font-family='Arial' font-size='13'%3E%E2%9C%93 ChatGPT%C2%B7Claude %EC%B0%A8%EB%8B%A8%3C/text%3E%3Ctext x='546' y='176' fill='%2310b981' font-family='Arial' font-size='13'%3E%E2%9C%93 %ED%95%99%EC%88%A0%EC%9E%90%EB%A3%8C %EA%B2%80%EC%83%89 %EC%B0%A8%EB%8B%A8%3C/text%3E%3Ctext x='546' y='202' fill='%2310b981' font-family='Arial' font-size='13'%3E%E2%9C%93 %EB%B3%B5%EC%82%AC%C2%B7%EC%BA%A1%EC%B2%98%C2%B7%EC%9D%B8%EC%87%84 %EC%A0%9C%ED%95%9C%3C/text%3E%3Ctext x='546' y='228' fill='%239fe8dc' font-family='Arial' font-size='12'%3E%E2%9C%93 AI %EC%BB%A4%EB%8B%9D %EA%B5%90%EB%9E%80 %EB%A0%88%EC%9D%B4%EC%96%B4%3C/text%3E%3Crect x='524' y='276' width='248' height='178' rx='14' fill='%230e2638' stroke='%2310b981' stroke-width='2'/%3E%3Ctext x='546' y='310' fill='white' font-family='Arial' font-size='15' font-weight='700'%3E%EC%8B%A4%EC%8B%9C%EA%B0%84 %EB%B3%B4%EC%95%88 %EB%A1%9C%EA%B7%B8%3C/text%3E%3Ctext x='546' y='342' fill='%2310b981' font-family='monospace' font-size='12'%3E09:14 %EC%8B%9C%ED%97%98 %EB%AA%A8%EB%93%9C %ED%99%9C%EC%84%B1%ED%99%94%3C/text%3E%3Ctext x='546' y='368' fill='%23ffb000' font-family='monospace' font-size='12'%3E09:17 ChatGPT %EC%A0%91%EA%B7%BC %EC%B0%A8%EB%8B%A8%3C/text%3E%3Ctext x='546' y='394' fill='%23ff7088' font-family='monospace' font-size='12'%3E09:23 OBS %EB%85%B9%ED%99%94 %EC%A6%89%EC%8B%9C %EC%9E%A0%EA%B8%88%3C/text%3E%3Ctext x='546' y='420' fill='%239fe8dc' font-family='monospace' font-size='12'%3E09:24 %ED%98%B8%EC%8A%A4%ED%8A%B8 %EB%85%B9%ED%99%94 %EC%A0%95%EC%83%81%3C/text%3E%3Crect x='28' y='474' width='744' height='88' rx='12' fill='%230a1e2e' stroke='%231d4a5c'/%3E%3Crect x='50' y='502' width='146' height='32' rx='8' fill='%230d9f8c'/%3E%3Ctext x='66' y='523' fill='white' font-family='Arial' font-size='13' font-weight='700'%3EPROTECTED LIVE%3C/text%3E%3Ctext x='216' y='516' fill='white' font-family='Arial' font-size='14' font-weight='700'%3E%ED%98%B8%EC%8A%A4%ED%8A%B8%EB%8A%94 %EB%82%B4 %EA%B0%95%EC%9D%98 %EB%85%B9%ED%99%94 %EA%B0%80%EB%8A%A5 %C2%B7 %EC%88%98%EA%B0%95%EC%83%9D %EB%AC%B4%EB%8B%A8 %EB%85%B9%ED%99%94%C2%B7%EC%B4%AC%EC%98%81%EB%A7%8C %EC%8B%A4%EC%8B%9C%EA%B0%84 %EC%B0%A8%EB%8B%A8%3C/text%3E%3Ctext x='216' y='538' fill='%239fb3c8' font-family='Arial' font-size='12'%3EOS DWM %ED%99%94%EB%A9%B4 %EB%B3%B4%ED%98%B8 + 1%EC%B4%88 %ED%94%84%EB%A1%9C%EC%84%B8%EC%8A%A4 %EA%B0%90%EC%8B%9C + %EC%9B%B9%EC%BA%A0 AI %ED%8F%B0 %EA%B0%90%EC%A7%80 + %EB%8F%99%EC%A0%81 %ED%8F%AC%EB%A0%8C%EC%8B%9D %EC%9B%8C%ED%84%B0%EB%A7%88%ED%81%AC%3C/text%3E%3C/svg%3E") center/cover no-repeat;
+      box-shadow: var(--shadow);
+      animation: visualIn 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+      opacity: 0.96;
+    }
+    @keyframes visualIn {
+      from { opacity: 0; transform: translateX(40px) scale(0.98); }
+      to { opacity: 0.95; transform: translateX(0) scale(1); }
+    }
+    .hero-content {
+      position: relative; z-index: 2; padding: 0 0 72px;
+      width: min(1120px, calc(100% - 40px)); max-width: 580px;
+      margin-left: max(20px, calc((100% - 1120px) / 2));
+      animation: copyIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+    }
+    @keyframes copyIn {
+      from { opacity: 0; transform: translateY(28px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero-brand {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: clamp(3.4rem, 9vw, 6.2rem);
+      letter-spacing: -0.06em; line-height: 0.92; margin-bottom: 20px;
+    }
+    .hero-brand span {
+      display: inline-block;
+      background: linear-gradient(120deg, #ffffff 0%, #9fe8dc 100%);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .hero h1 {
+      font-family: var(--font-display); font-weight: 700;
+      font-size: clamp(1.35rem, 2.6vw, 1.85rem);
+      letter-spacing: -0.03em; line-height: 1.35;
+      margin-bottom: 14px; max-width: 18em;
+    }
+    .hero p.lead {
+      font-size: 1.02rem; color: rgba(255,255,255,0.78);
+      margin-bottom: 28px; max-width: 30em;
+    }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 12px; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      font-family: var(--font-body); font-weight: 600; font-size: 0.98rem;
+      padding: 14px 22px; border-radius: 999px; border: none; cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { background: var(--teal); color: var(--white); }
+    .btn-primary:hover { background: var(--teal-deep); }
+    .btn-ghost {
+      background: transparent; color: var(--white);
+      border: 1px solid rgba(255,255,255,0.35);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.08); }
+    .btn-ink {
+      background: var(--ink); color: var(--white); width: 100%;
+    }
+    .btn-ink:hover { background: #15293a; }
+
+    section { padding: 88px 0; }
+    .section-label {
+      font-size: 0.78rem; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--teal-deep); margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: var(--font-display); font-weight: 700;
+      font-size: clamp(1.7rem, 3.4vw, 2.4rem);
+      letter-spacing: -0.04em; line-height: 1.2; margin-bottom: 14px;
+    }
+    .section-desc {
+      color: var(--ink-soft); font-size: 1.05rem; max-width: 38em;
+    }
+
+    .building {
+      background:
+        radial-gradient(circle at 90% 10%, rgba(13,159,140,0.1), transparent 40%),
+        var(--white);
+    }
+    .building-grid {
+      display: grid; grid-template-columns: 1.15fr 0.85fr;
+      gap: 48px; align-items: start; margin-top: 40px;
+    }
+    .building-list {
+      list-style: none; display: flex; flex-direction: column; gap: 16px;
+      margin-top: 24px;
+    }
+    .building-list li {
+      padding-left: 28px; position: relative; color: var(--ink-soft);
+    }
+    .building-list li::before {
+      content: ""; position: absolute; left: 0; top: 0.55em;
+      width: 10px; height: 10px; border-radius: 2px; background: var(--teal);
+    }
+    .founders-note {
+      padding: 32px 28px;
+      background: linear-gradient(160deg, #0c1b2a, #143247);
+      color: var(--white); min-height: 260px;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      position: relative; overflow: hidden;
+    }
+    .founders-note::after {
+      content: ""; position: absolute; inset: auto -20% -30% 20%;
+      height: 80%;
+      background: radial-gradient(circle, rgba(13,159,140,0.45), transparent 65%);
+      animation: pulseGlow 4.5s ease-in-out infinite;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.55; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.08); }
+    }
+    .founders-note h3,
+    .founders-note p { position: relative; z-index: 1; }
+    .founders-note h3 {
+      font-family: var(--font-display); font-size: 1.45rem;
+      letter-spacing: -0.03em; margin-bottom: 10px;
+    }
+    .founders-note p { color: rgba(255,255,255,0.75); font-size: 0.98rem; }
+
+    .problem { background: var(--mist); }
+    .problem-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 28px; margin-top: 40px;
+    }
+    @media (max-width: 900px) {
+      .problem-grid { grid-template-columns: 1fr; }
+    }
+    .problem-item h3 {
+      font-family: var(--font-display); font-size: 1.15rem;
+      letter-spacing: -0.02em; margin-bottom: 8px;
+    }
+    .problem-item p { color: var(--ink-soft); font-size: 0.98rem; }
+
+    .how { background: var(--white); }
+    .showcase {
+      background: linear-gradient(160deg, #07131f 0%, #0d2436 55%, #0a3531 100%);
+      color: var(--white);
+      padding: 92px 0;
+    }
+    .showcase .section-label { color: #9fe8dc; }
+    .showcase .section-title { color: var(--white); }
+    .showcase .section-desc { color: rgba(255,255,255,0.76); }
+    .shield-cards {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 22px; margin-top: 38px;
+    }
+    .shield-card {
+      background: rgba(18, 40, 58, 0.85);
+      border-radius: 18px; padding: 26px 22px;
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.28);
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .shield-card.exam { border-top: 4px solid #2d8cff; }
+    .shield-card.detect { border-top: 4px solid #ff3b5c; }
+    .shield-card.log { border-top: 4px solid #10b981; }
+    .shield-head {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px;
+    }
+    .shield-tag {
+      font-size: 0.74rem; font-weight: 700; padding: 4px 10px;
+      border-radius: 999px; letter-spacing: 0.04em;
+    }
+    .shield-card.exam .shield-tag { background: rgba(45,140,255,0.18); color: #7cc0ff; }
+    .shield-card.detect .shield-tag { background: rgba(255,59,92,0.2); color: #ff8096; }
+    .shield-card.log .shield-tag { background: rgba(16,185,129,0.2); color: #6ee7b7; }
+    .shield-card h3 {
+      font-family: var(--font-display); font-size: 1.25rem; color: var(--white);
+    }
+    .shield-mock {
+      background: #081521; border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; padding: 16px; font-size: 0.88rem;
+      line-height: 1.75; color: rgba(255,255,255,0.86); flex: 1;
+    }
+    .compare-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 24px; margin-top: 32px;
+    }
+    .compare-box {
+      border-radius: 18px; padding: 28px 26px;
+    }
+    .compare-box.old {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.75);
+    }
+    .compare-box.new {
+      background: linear-gradient(155deg, rgba(13,159,140,0.24), rgba(12,36,56,0.92));
+      border: 2px solid #10b981;
+      color: var(--white);
+      box-shadow: 0 20px 44px rgba(16,185,129,0.16);
+    }
+    .compare-box h3 {
+      font-family: var(--font-display); font-size: 1.35rem; margin-bottom: 6px;
+    }
+    .compare-list {
+      list-style: none; display: flex; flex-direction: column; gap: 10px; margin-top: 16px;
+      font-size: 0.95rem;
+    }
+    @media (max-width: 900px) {
+      .shield-cards, .compare-grid { grid-template-columns: 1fr; }
+    }
+    .steps {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 28px; margin-top: 44px;
+    }
+    .step-num {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: 2.6rem; letter-spacing: -0.05em;
+      color: var(--teal); line-height: 1; margin-bottom: 14px;
+    }
+    .step h3 {
+      font-family: var(--font-display); font-size: 1.2rem;
+      letter-spacing: -0.02em; margin-bottom: 8px;
+    }
+    .step p { color: var(--ink-soft); font-size: 0.98rem; }
+
+    .offer { background: var(--paper); }
+    .offer-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 40px; margin-top: 40px; align-items: start;
+    }
+    .price-main {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+      letter-spacing: -0.05em; line-height: 1.05;
+    }
+    .price-main small {
+      display: block; margin-top: 12px; font-size: 1rem;
+      font-weight: 500; font-family: var(--font-body);
+      color: var(--ink-soft); letter-spacing: 0;
+    }
+    .perk-list {
+      list-style: none; display: flex; flex-direction: column;
+      gap: 10px; margin-top: 20px;
+    }
+    .perk-list li {
+      padding-left: 18px; position: relative; color: var(--ink-soft);
+    }
+    .perk-list li::before {
+      content: ""; position: absolute; left: 0; top: 0.55em;
+      width: 7px; height: 7px; background: var(--teal);
+    }
+    .pricing-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 18px; margin-top: 36px; align-items: stretch;
+    }
+    @media (max-width: 1024px) {
+      .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .price-card {
+      background: var(--white); border: 1px solid #d9e4ea;
+      border-radius: 18px; padding: 28px 24px;
+      display: flex; flex-direction: column;
+      box-shadow: 0 10px 28px rgba(12, 27, 42, 0.05);
+    }
+    .price-card.featured {
+      border: 2px solid var(--teal);
+      box-shadow: 0 16px 38px rgba(13, 159, 140, 0.14);
+      position: relative;
+    }
+    .price-badge {
+      display: inline-block; align-self: flex-start;
+      font-size: 0.74rem; font-weight: 700; letter-spacing: 0.06em;
+      padding: 4px 10px; border-radius: 999px;
+      background: var(--mist); color: var(--teal-deep); margin-bottom: 12px;
+    }
+    .price-card.featured .price-badge {
+      background: var(--teal); color: var(--white);
+    }
+    .price-card h3 {
+      font-family: var(--font-display); font-size: 1.3rem;
+      margin-bottom: 8px; color: var(--ink);
+    }
+    .price-tag {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: 2rem; letter-spacing: -0.04em; color: var(--ink);
+      margin-bottom: 6px;
+    }
+    .price-tag span {
+      font-size: 0.92rem; font-weight: 500; color: #5b6e80;
+    }
+    .price-sub {
+      font-size: 0.88rem; color: var(--ink-soft); margin-bottom: 16px; min-height: 2.8em;
+    }
+    .price-card .perk-list { margin-top: 0; margin-bottom: 22px; flex: 1; font-size: 0.92rem; }
+    @media (max-width: 900px) {
+      .pricing-grid { grid-template-columns: 1fr; }
+    }
+    .billing-toggle {
+      display: inline-flex; gap: 6px; padding: 5px; margin-top: 22px;
+      background: #e1ecef; border-radius: 999px;
+    }
+    .billing-btn {
+      border: none; background: transparent; padding: 9px 18px;
+      border-radius: 999px; font-family: var(--font-body);
+      font-size: 0.9rem; font-weight: 700; color: var(--ink-soft); cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .billing-btn.on {
+      background: var(--ink); color: var(--white);
+      box-shadow: 0 4px 12px rgba(12, 27, 42, 0.16);
+    }
+    .price-annual-note {
+      font-size: 0.82rem; font-weight: 600; color: var(--teal-deep);
+      margin-bottom: 10px;
+    }
+
+    .subscribe {
+      background: linear-gradient(145deg, #0c1b2a 0%, #0f3d38 100%);
+      color: var(--white); padding: 96px 0;
+    }
+    .subscribe .section-label { color: #9fe8dc; }
+    .subscribe .section-title { color: var(--white); }
+    .subscribe .section-desc {
+      color: rgba(255,255,255,0.72); margin-bottom: 28px;
+    }
+    .form-panel {
+      display: grid; grid-template-columns: 1.1fr 0.9fr;
+      gap: 36px; align-items: start; margin-top: 8px;
+    }
+    .form-box {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 28px 24px;
+    }
+    .field { margin-bottom: 14px; }
+    .field label {
+      display: block; font-size: 0.82rem; font-weight: 600;
+      margin-bottom: 6px; color: rgba(255,255,255,0.8);
+    }
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%; padding: 12px 14px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(0,0,0,0.25); color: var(--white);
+      font-family: var(--font-body); font-size: 0.95rem;
+      border-radius: 8px; outline: none;
+    }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus { border-color: var(--teal); }
+    .field textarea { min-height: 88px; resize: vertical; }
+    .form-note {
+      margin-top: 12px; font-size: 0.82rem;
+      color: rgba(255,255,255,0.55); line-height: 1.5;
+    }
+    .form-ok {
+      display: none; margin-top: 14px; padding: 14px 16px;
+      background: rgba(13,159,140,0.2); border: 1px solid rgba(13,159,140,0.4);
+      color: #9fe8dc; border-radius: 8px;
+      font-size: 0.92rem; line-height: 1.6;
+    }
+    .form-ok.show { display: block; }
+    .who-list {
+      list-style: none; display: flex; flex-direction: column; gap: 14px;
+      margin-top: 8px;
+    }
+    .who-list li {
+      padding-left: 18px; position: relative;
+      color: rgba(255,255,255,0.78); font-size: 0.98rem;
+    }
+    .who-list li::before {
+      content: ""; position: absolute; left: 0; top: 0.55em;
+      width: 7px; height: 7px; background: #9fe8dc;
+    }
+
+    footer {
+      background: #07131f; color: rgba(255,255,255,0.55);
+      padding: 28px 0; font-size: 0.88rem;
+    }
+    .footer-inner {
+      display: flex; flex-wrap: wrap; gap: 12px 28px;
+      justify-content: space-between; align-items: center;
+    }
+    footer strong { color: rgba(255,255,255,0.9); font-weight: 600; }
+
+    .reveal {
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.on { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 900px) {
+      .hero-visual {
+        position: absolute; right: -18%; top: 8%;
+        width: 92vw; opacity: 0.35;
+      }
+      .hero-content {
+        max-width: 100%; margin-left: auto; margin-right: auto;
+        padding-bottom: 56px; padding-top: 28vh;
+      }
+      .building-grid, .problem-grid, .steps, .offer-grid, .form-panel {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 560px) {
+      .hero-brand { font-size: 3.2rem; }
+      .nav-cta { display: none; }
+      section { padding: 64px 0; }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="#top">VIDLOCK</a>
+      <div class="nav-actions">
+        <a class="nav-login" href="login.html">로그인</a>
+        <a class="nav-cta" href="#subscribe">체험 · 구독 신청</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-label="VIDLOCK 소개">
+      <div class="hero-grid" aria-hidden="true"></div>
+      <div class="hero-visual" role="img" aria-label="VIDLOCK Zoom 보호 화면 일러스트"></div>
+      <div class="hero-content">
+        <p class="hero-brand"><span>VIDLOCK</span></p>
+        <h1>Zoom 회의 녹화와 유출을 실시간으로 막는 보안 솔루션.</h1>
+        <p class="lead">와풀 AI의 실시간 녹화·촬영 차단 소프트웨어입니다. PC 녹화·캡처뿐 아니라 웹캠 AI 폰 감지와 포렌식 워터마크로 소중한 강의를 지킵니다. 지금 1주 체험권으로 먼저 경험해 보세요.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#offer">1주 체험 · 요금제 보기</a>
+          <a class="btn btn-ghost" href="https://drive.google.com/drive/folders/1QKujQE22oXVoMZwBaNw9_crWnk54k1d0?usp=drive_link" target="_blank" rel="noopener">📥 참가자용 무료 다운로드</a>
+          <a class="btn btn-ghost" href="manual.html">📖 사용 설명서</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="building" id="building">
+      <div class="wrap">
+        <p class="section-label reveal">Ready to use</p>
+        <h2 class="section-title reveal">지금 바로 실전 강의에 적용할 수 있는 완성형 보안 앱입니다.</h2>
+        <div class="building-grid">
+          <div class="reveal">
+            <p class="section-desc">VIDLOCK은 Zoom 화상회의 중 화면 녹화·캡처를 실시간으로 감지하고, 회의 화면을 잠가 유출을 막는 데스크톱 보안 앱입니다. 교육·컨설팅·기업 회의 현장에서 지금 바로 사용하실 수 있습니다.</p>
+            <ul class="building-list">
+              <li>호스트용 Desktop 앱 + 참가자용 무료 앱 구조 (호스트는 본인 강의 녹화 허용 스위치 탑재)</li>
+              <li>Zoom 초대 링크로 보호 모드 참가</li>
+              <li>녹화 시도 시 OS 레벨 화면 잠금</li>
+              <li>웹캠 AI로 폰·카메라 외부 촬영 감지 (블랙아웃)</li>
+              <li>동적 포렌식 워터마크 &amp; PC 연결 스마트안경(블루투스) 보조 감지</li>
+              <li>지식재산권 출원 준비 및 등록 진행 · 와풀 AI 교육연구소 제작</li>
+            </ul>
+          </div>
+          <aside class="founders-note reveal">
+            <h3>실전 1주 체험권으로 먼저 검증하세요</h3>
+            <p>실제 강의에 바로 투입할 수 있도록 호스트·참가자 앱 구성을 완료했습니다. 강사(호스트) 본인은 강의를 자유롭게 녹화하면서 수강생의 무단 녹화·촬영만 차단할 수 있습니다. 1주 체험권(4,900원 · 인증 시 전액 환급)으로 직접 경험해 보세요.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="showcase" id="showcase">
+      <div class="wrap">
+        <p class="section-label reveal">Live Defense Architecture</p>
+        <h2 class="section-title reveal">실시간 3중 방어 화면과 기존 방식과의 결정적 차이</h2>
+        <p class="section-desc reveal">단순 파일 암호화(VOD DRM)로는 막을 수 없는 실시간 Zoom 강의·온라인 시험 화면을 3단계로 동시에 보호합니다.</p>
+
+        <div class="shield-cards">
+          <article class="shield-card exam reveal">
+            <div class="shield-head">
+              <h3>01 · 온라인 시험 모드</h3>
+              <span class="shield-tag">AI·학술 차단</span>
+            </div>
+            <p style="font-size:0.9rem;color:rgba(255,255,255,0.72)">허용된 회의 화면 외 부정행위 경로를 동시에 제한합니다.</p>
+            <div class="shield-mock">
+              <div style="color:#6ee7b7;font-weight:700">✓ ChatGPT · Claude · Gemini · Perplexity 차단</div>
+              <div style="color:#6ee7b7;font-weight:700">✓ Google Scholar 등 학술 검색 차단</div>
+              <div style="color:#6ee7b7;font-weight:700">✓ 복사 · 붙여넣기 · 인쇄 · 캡처 단축키 제한</div>
+              <div style="color:#9fe8dc;font-weight:700">✓ 화면 위 육안 비가시 AI 커닝 교란 레이어 주입</div>
+            </div>
+          </article>
+
+          <article class="shield-card detect reveal">
+            <div class="shield-head">
+              <h3>02 · 녹화·촬영 실시간 잠금</h3>
+              <span class="shield-tag">즉시 블랙아웃</span>
+            </div>
+            <p style="font-size:0.9rem;color:rgba(255,255,255,0.72)">녹화 프로그램이나 휴대폰 카메라가 감지되면 즉시 화면을 잠급니다.</p>
+            <div class="shield-mock">
+              <div style="background:rgba(255,59,92,0.16);border:1px solid rgba(255,59,92,0.4);padding:8px 12px;border-radius:8px;color:#ff8096;font-weight:700;margin-bottom:8px">
+                🚨 감지됨: OBS / 오캠 / 반디캠 / 휴대폰 카메라
+              </div>
+              <div>· OS 레벨 <code style="color:#9fe8dc">setContentProtection</code> 상시 작동</div>
+              <div>· 1초 주기 녹화 프로세스 감시 &amp; Zoom 뷰 블랙아웃</div>
+              <div>· 웹캠 AI 휴대폰·카메라 촬영 감지 시 즉시 화면 가림</div>
+            </div>
+          </article>
+
+          <article class="shield-card log reveal">
+            <div class="shield-head">
+              <h3>03 · 포렌식 추적 &amp; 호스트 녹화</h3>
+              <span class="shield-tag">추적 + 편의</span>
+            </div>
+            <p style="font-size:0.9rem;color:rgba(255,255,255,0.72)">수강생 유출은 끝까지 추적하고, 강사 본인의 강의 녹화는 허용합니다.</p>
+            <div class="shield-mock" style="font-family:monospace">
+              <div style="color:#6ee7b7">09:14:22 시험 모드 및 워터마크 활성화</div>
+              <div style="color:#fbbf24">09:17:04 ChatGPT 접근 차단 기록</div>
+              <div style="color:#ff8096">09:23:08 녹화 프로세스 감지 → 화면 보호</div>
+              <div style="color:#9fe8dc;font-family:var(--font-body);margin-top:6px;font-weight:700">🎥 호스트 전용 [내 강의 녹화 허용] 스위치 지원</div>
+            </div>
+          </article>
+        </div>
+
+        <div class="compare-grid">
+          <div class="compare-box old reveal">
+            <span class="shield-tag" style="background:rgba(255,255,255,0.1);color:#cbd5e1">기존 방식</span>
+            <h3 style="margin-top:10px">VOD 중심 기존 DRM 솔루션</h3>
+            <ul class="compare-list">
+              <li><span style="color:#f87171;font-weight:700">✕</span> 녹화된 VOD 파일 위주 — 실시간 Zoom 회의 보호 한계</li>
+              <li><span style="color:#f87171;font-weight:700">✕</span> 모니터 밖 스마트폰·카메라 직접 촬영 대응 어려움</li>
+              <li><span style="color:#f87171;font-weight:700">✕</span> 온라인 시험 중 AI·학술 사이트 검색 차단 불가</li>
+              <li><span style="color:#f87171;font-weight:700">✕</span> 수백만~수천만 원대 초기 구축 비용 → <strong>유출 후 사후 확인에 그침</strong></li>
+            </ul>
+          </div>
+          <div class="compare-box new reveal">
+            <span class="shield-tag" style="background:#10b981;color:#042f2e">VIDLOCK 실시간 통합 보호</span>
+            <h3 style="margin-top:10px">비디락 (VIDLOCK Desktop &amp; Participant)</h3>
+            <ul class="compare-list">
+              <li><span style="color:#6ee7b7;font-weight:700">✓</span> 실시간 Zoom 회의 화면 OS 레벨 캡처·녹화 원천 차단</li>
+              <li><span style="color:#6ee7b7;font-weight:700">✓</span> 국산·글로벌 녹화기 1초 감시 + 웹캠 AI 휴대폰 촬영 즉시 블랙아웃</li>
+              <li><span style="color:#6ee7b7;font-weight:700">✓</span> 온라인 시험 모드 (AI·학술 사이트 차단 + AI 커닝 교란 + 단축키 제한)</li>
+              <li><span style="color:#6ee7b7;font-weight:700">✓</span> 호스트만 월 19,000원부터 · <strong>수강생(참가자)은 인원 무제한 무료</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="problem" id="problem">
+      <div class="wrap">
+        <p class="section-label reveal">Why it matters</p>
+        <h2 class="section-title reveal">회의는 끝나도, 화면은 남습니다.</h2>
+        <p class="section-desc reveal">실시간 Zoom 화면이 녹화되면 콘텐츠·노하우·내부 자료가 그대로 밖으로 나갑니다.</p>
+        <div class="problem-grid">
+          <article class="problem-item reveal">
+            <h3>교육·강의 유출</h3>
+            <p>유료 수업·컨설팅 화면이 무단 공유되면 신뢰와 수익이 동시에 깎입니다.</p>
+          </article>
+          <article class="problem-item reveal">
+            <h3>기존 DRM의 한계</h3>
+            <p>파일 암호화는 VOD에 강하고, 실시간 화상회의 보호에는 약합니다.</p>
+          </article>
+          <article class="problem-item reveal">
+            <h3>PC 밖 폰·AI 안경 촬영 대응</h3>
+            <p>모니터를 휴대폰이나 AI 안경으로 찍는 유출에 대비해 웹캠 AI 감지(블랙아웃)와 PC 블루투스 연결 스마트안경 탐지, 화면 전체 동적 포렌식 워터마크(시청자·IP·시각 추적)를 함께 적용합니다.</p>
+          </article>
+          <article class="problem-item reveal">
+            <h3>학교·온라인 시험 모드 (AI 커닝 교란)</h3>
+            <p>시험 모드에서 AI·학술자료 사이트와 복사·인쇄 단축키를 차단하고, 화면에 육안 비가시 AI 교란 지시문·미세 패턴을 더해 AI 안경·OCR 기반 부정행위를 억제합니다.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="how" id="how">
+      <div class="wrap">
+        <p class="section-label reveal">How it will work</p>
+        <h2 class="section-title reveal">호스트만 구독하면, 참가자는 무료입니다.</h2>
+        <p class="section-desc reveal">도입 장벽을 낮추기 위해 참가자 앱은 무료로 배포합니다.</p>
+        <div class="steps">
+          <article class="step reveal">
+            <div class="step-num">01</div>
+            <h3>호스트가 구독</h3>
+            <p>회의 주최자·학원·기업이 VIDLOCK Desktop을 사용합니다.</p>
+          </article>
+          <article class="step reveal">
+            <div class="step-num">02</div>
+            <h3>참가자는 무료 앱으로 입장</h3>
+            <p>수강생은 무료 참가자용 앱을 다운받아 실행한 뒤, 안내받은 Zoom 회의 ID·초대 링크로 입장합니다.</p>
+            <p style="margin-top:12px"><a href="https://drive.google.com/drive/folders/1QKujQE22oXVoMZwBaNw9_crWnk54k1d0?usp=drive_link" target="_blank" rel="noopener" style="color:var(--teal-deep);font-weight:700;text-decoration:underline">📥 참가자용 프로그램 다운로드 →</a></p>
+          </article>
+          <article class="step reveal">
+            <div class="step-num">03</div>
+            <h3>녹화·촬영 시도 차단</h3>
+            <p>PC 녹화 프로그램과, 웹캠에 잡힌 폰·카메라 촬영을 감지해 화면을 잠급니다.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="offer" id="offer">
+      <div class="wrap">
+        <p class="section-label reveal">Pricing · 선착순 30명 특가</p>
+        <h2 class="section-title reveal">호스트만 구독하면, 수강생은 무제한 무료입니다.</h2>
+        <p class="section-desc reveal"><strong>1차 선착순 30명</strong>에게는 해지 전까지 초기 특가를 그대로 유지해 드립니다. 먼저 1주 체험권으로 직접 확인해 보세요.</p>
+
+        <div class="billing-toggle reveal" role="group" aria-label="결제 주기 선택">
+          <button type="button" class="billing-btn on" id="billMonthBtn" onclick="setBilling('month')">월간 구독</button>
+          <button type="button" class="billing-btn" id="billYearBtn" onclick="setBilling('year')">연간 구독 (2개월 무료)</button>
+        </div>
+
+        <div class="pricing-grid">
+          <article class="price-card featured reveal">
+            <span class="price-badge">TRIAL · 추천 시작</span>
+            <h3>1주 체험권 <span style="font-size:0.82rem;font-weight:700;color:var(--teal-deep)">(인증 시 4,900원 전액 환급)</span></h3>
+            <p class="price-tag">4,900원 <span>/ 1주 무제한</span></p>
+            <p class="price-sub">1주일간 횟수·시간 제한 없이 직접 써보는 체험권 (호스트 1명)</p>
+            <ul class="perk-list">
+              <li>1주일간 회의 횟수·시간 무제한 사용</li>
+              <li>수강생(참가자) 인원 제한 없이 무료 배포</li>
+              <li>OS 녹화 차단 + 웹캠 폰 감지 + 워터마크</li>
+              <li><strong>🎁 후기 2곳 인증 시 보상 택 1:</strong><br>① <strong>첫 달(19,000원) 무료권</strong> 증정<br>② 체험권 <strong>4,900원 전액 환급</strong></li>
+            </ul>
+            <a class="btn btn-primary" href="#subscribe" onclick="document.getElementById('plan').value='trial-1week'" style="color:#fff;width:100%">1주 체험권 신청</a>
+          </article>
+
+          <article class="price-card reveal">
+            <span class="price-badge">SOLO · 호스트 1인</span>
+            <h3 id="soloTitle">1인 요금제</h3>
+            <p class="price-tag" id="soloPrice">월 19,000원 <span>(정가 29,000원)</span></p>
+            <p class="price-annual-note" id="soloNote">🔥 선착순 30명 평생 유지 · 연 190,000원</p>
+            <p class="price-sub">혼자서 유료 강의·컨설팅을 진행하는 1인 강사용</p>
+            <ul class="perk-list">
+              <li>호스트 1명 · 회의 횟수 및 시간 무제한</li>
+              <li>참가자(수강생) 무제한 무료 입장</li>
+              <li>OS 녹화/캡처 차단 + 동적 포렌식 워터마크</li>
+              <li>웹캠 AI 폰 촬영 감지 및 자동 블랙아웃</li>
+            </ul>
+            <a class="btn btn-ink" href="#subscribe" onclick="selectPlanFromCard('solo')">1인 구독 신청</a>
+          </article>
+
+          <article class="price-card reveal">
+            <span class="price-badge">DUO · 호스트 2인</span>
+            <h3 id="duoTitle">2인 요금제</h3>
+            <p class="price-tag" id="duoPrice">월 35,000원 <span>(정가 49,000원)</span></p>
+            <p class="price-annual-note" id="duoNote">🔥 1인당 월 17,500원 · 연 350,000원</p>
+            <p class="price-sub">대표 강사 + 조교/보조강사 또는 파트너 강사 2인용</p>
+            <ul class="perk-list">
+              <li>호스트 2명 포함 · 회의 무제한</li>
+              <li>참가자(수강생) 무제한 무료 입장</li>
+              <li>1인 요금제 전체 보안 기능 동일 제공</li>
+              <li>1:1 설치 및 온보딩 우선 지원</li>
+            </ul>
+            <a class="btn btn-ink" href="#subscribe" onclick="selectPlanFromCard('duo')">2인 구독 신청</a>
+          </article>
+
+          <article class="price-card reveal">
+            <span class="price-badge">TEAM · 호스트 5인</span>
+            <h3 id="teamTitle">5인 (학원·기관)</h3>
+            <p class="price-tag" id="teamPrice">월 79,000원 <span>(정가 99,000원)</span></p>
+            <p class="price-annual-note" id="teamNote">🔥 1인당 월 15,800원 · 연 790,000원</p>
+            <p class="price-sub">학원·교육기관·온라인 시험 감독·기업 사내 교육용 (5인 초과 시 +19,000원/인)</p>
+            <ul class="perk-list">
+              <li>호스트 5명 포함 · 참가자 무제한 무료</li>
+              <li><strong>온라인 시험 모드</strong> (AI·학술사이트 차단)</li>
+              <li><strong>AI 커닝 교란</strong> (비가시 지시문 + 미세 패턴)</li>
+              <li>다중 호스트 관리 및 맞춤 워터마크</li>
+            </ul>
+            <a class="btn btn-ink" href="#subscribe" onclick="selectPlanFromCard('team')">5인·기관 도입 신청</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="subscribe" id="subscribe">
+      <div class="wrap">
+        <p class="section-label reveal">Apply now</p>
+        <h2 class="section-title reveal">지금 바로 체험단 및 구독을 신청하세요.</h2>
+        <p class="section-desc reveal">정보를 입력한 뒤 바로 카드로 결제하거나, 결제선생 카톡 청구서를 요청하실 수 있습니다.</p>
+        <div class="form-panel">
+          <form class="form-box reveal" id="subscribeForm">
+            <div class="field">
+              <label for="name">이름 / 담당자</label>
+              <input id="name" name="name" type="text" required placeholder="홍길동" />
+            </div>
+            <div class="field">
+              <label for="org">기관 / 회사</label>
+              <input id="org" name="org" type="text" required placeholder="OO학원, OO주식회사" />
+            </div>
+            <div class="field">
+              <label for="phone">휴대폰 번호 (결제 안내 및 청구서 발송용)</label>
+              <input id="phone" name="phone" type="tel" required placeholder="010-1234-5678" />
+            </div>
+            <div class="field">
+              <label for="email">이메일</label>
+              <input id="email" name="email" type="email" required placeholder="you@company.com" />
+            </div>
+            <div class="field">
+              <label for="plan">관심 유형</label>
+              <select id="plan" name="plan">
+                <option value="trial-1week">1주 체험권 (4,900원 · 인증 시 전액 환급 또는 첫 달 무료)</option>
+                <option value="solo-month">[선착순30명] 1인 월 구독 (월 19,000원 · 정가 29,000원)</option>
+                <option value="solo-year">[선착순30명] 1인 연 구독 (연 190,000원 · 2개월 무료)</option>
+                <option value="duo-month">[선착순30명] 2인 월 구독 (월 35,000원 · 정가 49,000원)</option>
+                <option value="duo-year">[선착순30명] 2인 연 구독 (연 350,000원 · 2개월 무료)</option>
+                <option value="team-month">[선착순30명] 5인 학원·기관 월 구독 (월 79,000원 · 시험모드 포함)</option>
+                <option value="team-year">[선착순30명] 5인 학원·기관 연 구독 (연 790,000원 · 2개월 무료)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="msg">하고 싶은 말 (선택)</label>
+              <textarea id="msg" name="msg" placeholder="예: 월 20명 Zoom 수업, 출시 일정 궁금합니다"></textarea>
+            </div>
+            <button class="btn btn-primary" type="button" id="cardPayBtn" hidden style="display:none;color:#fff;width:100%">💳 바로 카드결제하기 (퍼스트페이)</button>
+            <button class="btn btn-ink" type="submit" style="width:100%">📱 결제선생 카톡 청구서 / 계좌이체 요청</button>
+            <p class="form-note">💳 <strong>결제선생 카톡 청구서로 결제가 진행됩니다.</strong><br>신청 후 입력하신 휴대폰 번호로 결제선생 카톡 청구서를 보내드리며, 결제 확인 즉시 이용 안내를 드립니다.</p>
+            <div class="form-ok" id="formOk">메일 창을 열었습니다. 전송해 주시면 접수됩니다.</div>
+          </form>
+          <div class="reveal">
+            <p class="section-label" style="color:#9fe8dc">이런 분께 맞습니다</p>
+            <ul class="who-list">
+              <li>Zoom으로 유료 강의·컨설팅을 하는 강사·학원</li>
+              <li>내부 회의 화면 유출이 걱정인 중소기업</li>
+              <li>폰 촬영·화면 유출을 줄이고 싶은 교육기관</li>
+              <li>출시 전 제품을 먼저 써보고 싶은 보안 구독자</li>
+            </ul>
+            <p style="margin-top:20px;font-size:0.9rem;color:rgba(255,255,255,0.65)">
+              <a href="manual.html" style="color:#9fe8dc;font-weight:600">📖 사용 설명서 보기</a>
+              ·
+              <a href="https://drive.google.com/drive/folders/1QKujQE22oXVoMZwBaNw9_crWnk54k1d0?usp=drive_link" target="_blank" rel="noopener" style="color:#9fe8dc;font-weight:600">📥 참가자용 무료 다운로드</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <div><strong>VIDLOCK</strong> · 와풀 AI 교육연구소</div>
+      <div>사업자 477-14-02961 · 대표 강용국 · 통신판매업 2026-서울서초-1854 · 문의 010-7416-0979 (<a href="mailto:kangyg0612@naver.com" style="color:#9fe8dc">kangyg0612@naver.com</a>) · <a href="manual.html" style="color:#9fe8dc">사용 설명서</a></div>
+    </div>
+  </footer>
+
+  <script>
+    let currentBilling = "month";
+    function setBilling(mode) {
+      currentBilling = mode;
+      document.getElementById("billMonthBtn").classList.toggle("on", mode === "month");
+      document.getElementById("billYearBtn").classList.toggle("on", mode === "year");
+      if (mode === "year") {
+        document.getElementById("soloTitle").textContent = "1인 연 구독";
+        document.getElementById("soloPrice").innerHTML = '연 190,000원 <span>(정가 290,000원)</span>';
+        document.getElementById("soloNote").textContent = "🎉 선착순 30명 평생 유지 · 2개월 무료 (월 15,830원 꼴)";
+        document.getElementById("duoTitle").textContent = "2인 연 구독";
+        document.getElementById("duoPrice").innerHTML = '연 350,000원 <span>(정가 490,000원)</span>';
+        document.getElementById("duoNote").textContent = "🎉 2인 기준 2개월 무료 혜택 적용 중";
+        document.getElementById("teamTitle").textContent = "5인 (학원·기관) 연 구독";
+        document.getElementById("teamPrice").innerHTML = '연 790,000원 <span>(정가 990,000원)</span>';
+        document.getElementById("teamNote").textContent = "🎉 5인 기준 2개월 무료 + 세금계산서 발행";
+      } else {
+        document.getElementById("soloTitle").textContent = "1인 요금제";
+        document.getElementById("soloPrice").innerHTML = '월 19,000원 <span>(정가 29,000원)</span>';
+        document.getElementById("soloNote").textContent = "🔥 선착순 30명 평생 유지 · 연 190,000원";
+        document.getElementById("duoTitle").textContent = "2인 요금제";
+        document.getElementById("duoPrice").innerHTML = '월 35,000원 <span>(정가 49,000원)</span>';
+        document.getElementById("duoNote").textContent = "🔥 1인당 월 17,500원 · 연 350,000원";
+        document.getElementById("teamTitle").textContent = "5인 (학원·기관)";
+        document.getElementById("teamPrice").innerHTML = '월 79,000원 <span>(정가 99,000원)</span>';
+        document.getElementById("teamNote").textContent = "🔥 1인당 월 15,800원 · 연 790,000원";
+      }
+    }
+    function selectPlanFromCard(tier) {
+      const sel = document.getElementById("plan");
+      if (tier === "solo") sel.value = currentBilling === "year" ? "solo-year" : "solo-month";
+      else if (tier === "duo") sel.value = currentBilling === "year" ? "duo-year" : "duo-month";
+      else if (tier === "team") sel.value = currentBilling === "year" ? "team-year" : "team-month";
+    }
+
+    const els = document.querySelectorAll(".reveal");
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add("on");
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.16 });
+    els.forEach((el) => io.observe(el));
+
+    document.getElementById("subscribeForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("name").value.trim();
+      const org = document.getElementById("org").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const plan = document.getElementById("plan").value;
+      const msg = document.getElementById("msg").value.trim();
+      const subject = `[VIDLOCK 신청] ${org} / ${name} (${phone})`;
+      const body = 
+        `VIDLOCK 체험·구독 신청\n\n` +
+        `이름: ${name}\n기관: ${org}\n휴대폰 번호: ${phone}\n이메일: ${email}\n선택 요금제: ${plan}\n\n` +
+        `메시지:\n${msg || "(없음)"}\n`;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(`받는사람: kangyg0612@naver.com / 010-7416-0979\n제목: ${subject}\n\n${body}`).catch(() => {});
+      }
+
+      const smsUrl = `sms:01074160979?body=${encodeURIComponent(subject + "\n" + body)}`;
+      const mailUrl = `mailto:kangyg0612@naver.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+      window.location.href = isMobile ? smsUrl : mailUrl;
+
+      const formOk = document.getElementById("formOk");
+      formOk.innerHTML = `
+        <strong>✅ 신청 내용 준비 완료!</strong><br>
+        ${isMobile ? "문자 앱(<strong>010-7416-0979</strong>)이 열렸습니다. 전송만 눌러주세요!" : "메일 앱(<strong>kangyg0612@naver.com</strong>)이 열렸습니다. 전송해 주시면 접수됩니다."}<br>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+          <a href="${smsUrl}" style="background:#0d9f8c;color:#fff;padding:8px 14px;border-radius:8px;font-weight:700;font-size:0.85rem;text-decoration:none">📱 010-7416-0979 문자 보내기</a>
+          <a href="${mailUrl}" style="background:#1e293b;color:#fff;padding:8px 14px;border-radius:8px;font-weight:700;font-size:0.85rem;text-decoration:none">📧 kangyg0612@naver.com 메일 열기</a>
+        </div>
+        <span style="font-size:0.82rem;color:rgba(255,255,255,0.85);display:block;margin-top:8px">
+        ※ 창이 열리지 않을 경우 신청 내용이 <strong>클립보드에 자동 복사</strong>되었으니, 대표번호 <strong>010-7416-0979</strong> 문자 또는 <strong>kangyg0612@naver.com</strong>으로 붙여넣어 보내주시면 즉시 결제선생 청구서를 발송해 드립니다.
+        </span>
+      `;
+      formOk.classList.add("show");
+    });
+
+    const PAYMENT_ORIGIN = "https://3solve.kr";
+    const PAYMENT_API_BASE = PAYMENT_ORIGIN + "/api/payment";
+    let firstPaySdkPromise = null;
+
+    function loadFirstPaySdk(scriptUrl) {
+      if (window.FirstPay) return Promise.resolve();
+      if (firstPaySdkPromise) return firstPaySdkPromise;
+      firstPaySdkPromise = new Promise((resolve, reject) => {
+        const s = document.createElement("script");
+        s.src = scriptUrl;
+        s.async = true;
+        s.onload = () => resolve();
+        s.onerror = () => {
+          firstPaySdkPromise = null;
+          reject(new Error("퍼스트페이 결제 모듈을 불러오지 못했습니다."));
+        };
+        document.head.appendChild(s);
+      });
+      return firstPaySdkPromise;
+    }
+
+    function generateVidlockOrderId() {
+      const d = new Date();
+      const pad = (n) => String(n).padStart(2, "0");
+      const stamp =
+        d.getFullYear() +
+        pad(d.getMonth() + 1) +
+        pad(d.getDate()) +
+        pad(d.getHours()) +
+        pad(d.getMinutes()) +
+        pad(d.getSeconds());
+      const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
+      return `VL${stamp}${rand}`;
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    document.getElementById("cardPayBtn").addEventListener("click", async () => {
+      const form = document.getElementById("subscribeForm");
+      if (!form.reportValidity()) return;
+
+      const btn = document.getElementById("cardPayBtn");
+      const formOk = document.getElementById("formOk");
+      const name = document.getElementById("name").value.trim();
+      const org = document.getElementById("org").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const planId = document.getElementById("plan").value;
+      const msg = document.getElementById("msg").value.trim();
+
+      const originalLabel = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = "결제창 준비 중...";
+      formOk.classList.remove("show");
+
+      try {
+        const orderId = generateVidlockOrderId();
+        const prepRes = await fetch(`${PAYMENT_API_BASE}/vidlock-prepare`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId,
+            planId,
+            buyerName: name,
+            buyerOrg: org,
+            buyerPhone: phone,
+            buyerEmail: email,
+          }),
+        });
+        const prep = await prepRes.json().catch(() => ({}));
+        if (!prepRes.ok || !prep.callHash) {
+          throw new Error(prep.error || "결제 준비에 실패했습니다.");
+        }
+
+        await loadFirstPaySdk(prep.scriptUrl);
+        if (!window.FirstPay) {
+          throw new Error("퍼스트페이 SDK를 초기화할 수 없습니다.");
+        }
+
+        const returnUrl = `${PAYMENT_API_BASE}/auth-callback?target=${encodeURIComponent(window.location.origin)}`;
+
+        const result = await new Promise((resolve) => {
+          let settled = false;
+          const finish = (res) => {
+            if (settled) return;
+            settled = true;
+            window.removeEventListener("message", onMessage);
+            resolve(res);
+          };
+
+          const onMessage = async (event) => {
+            if (event.origin !== PAYMENT_ORIGIN) return;
+            if (!event.data || event.data.type !== "PAYMENT_AUTH_RESULT") return;
+            const auth = event.data.data || {};
+            if (auth.mxIssueNo !== prep.mxIssueNo) return;
+
+            if (auth.code !== "0000") {
+              finish({
+                success: false,
+                message: auth.message || "결제가 취소되었거나 인증에 실패했습니다.",
+              });
+              return;
+            }
+
+            try {
+              btn.textContent = "결제 승인 처리 중...";
+              const appRes = await fetch(`${PAYMENT_API_BASE}/vidlock-approve`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  mxId: auth.mxId,
+                  mxIssueNo: auth.mxIssueNo,
+                  mxIssueDate: auth.mxIssueDate,
+                  fdTid: auth.fdTid,
+                  approvalUrl: auth.approvalUrl,
+                }),
+              });
+              const appData = await appRes.json().catch(() => ({}));
+              if (!appRes.ok || !appData.success) {
+                finish({
+                  success: false,
+                  message: appData.error || appData.message || "결제 승인에 실패했습니다.",
+                });
+                return;
+              }
+              finish({ success: true, data: appData });
+            } catch (err) {
+              finish({ success: false, message: err?.message || "결제 승인 중 오류가 발생했습니다." });
+            }
+          };
+
+          window.addEventListener("message", onMessage);
+
+          const pay = new window.FirstPay({
+            env: prep.env,
+            openType: prep.openType || "popup",
+            closeWindowOnly: false,
+            onFailure: (error) => {
+              finish({
+                success: false,
+                message: error?.message || "결제창 호출에 실패했습니다. 팝업 차단을 해제해 주세요.",
+              });
+            },
+          });
+
+          pay.goPay({
+            mxId: prep.mxId,
+            mxIssueNo: prep.mxIssueNo,
+            mxIssueDate: prep.mxIssueDate,
+            orderName: prep.orderName,
+            amount: prep.amount,
+            returnUrl,
+            callHash: prep.callHash,
+            custName: prep.custName || name,
+            email: prep.email || email,
+            phoneNo: prep.phoneNo || phone.replace(/\D/g, ""),
+            lang: "ko",
+            payMethod: "CC",
+            payMethodView: true,
+            simplepayView: true,
+            emailView: true,
+            escrowView: false,
+          });
+        });
+
+        if (result.success) {
+          const d = result.data;
+          const notifySubject = `[VIDLOCK 결제완료] ${org} / ${name} (${d.orderId})`;
+          const notifyBody =
+            `VIDLOCK 카드결제 완료 알림\n\n` +
+            `주문번호: ${d.orderId}\n상품명: ${d.planName}\n결제금액: ${Number(d.amount).toLocaleString()}원\n승인번호: ${d.authNo || "-"}\n` +
+            `이름: ${name}\n기관: ${org}\n휴대폰: ${phone}\n이메일: ${email}\n메모: ${msg || "(없음)"}`;
+          const smsUrl = `sms:01074160979?body=${encodeURIComponent(notifySubject + "\n" + notifyBody)}`;
+          const mailUrl = `mailto:kangyg0612@naver.com?subject=${encodeURIComponent(notifySubject)}&body=${encodeURIComponent(notifyBody)}`;
+
+          formOk.innerHTML = `
+            <strong>✅ 카드결제가 정상적으로 완료되었습니다!</strong><br>
+            <div style="margin-top:8px;font-size:0.9rem;line-height:1.6">
+              · 상품명: <strong>${escapeHtml(d.planName)}</strong><br>
+              · 결제금액: <strong>${Number(d.amount).toLocaleString()}원</strong><br>
+              · 주문번호: <code>${escapeHtml(d.orderId)}</code><br>
+              · 승인번호: <code>${escapeHtml(d.authNo || d.transactionId || "-")}</code>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+              <a href="${smsUrl}" style="background:#0d9f8c;color:#fff;padding:8px 14px;border-radius:8px;font-weight:700;font-size:0.85rem;text-decoration:none">📱 010-7416-0979 바로 사용 안내 받기</a>
+              <a href="${mailUrl}" style="background:#1e293b;color:#fff;padding:8px 14px;border-radius:8px;font-weight:700;font-size:0.85rem;text-decoration:none">📧 메일로 결제확인 보내기</a>
+            </div>
+          `;
+          formOk.classList.add("show");
+        } else {
+          formOk.innerHTML = `
+            <strong>⚠️ 카드결제가 완료되지 않았습니다.</strong><br>
+            <span style="font-size:0.88rem">${escapeHtml(result.message)}</span><br>
+            <span style="font-size:0.82rem;opacity:0.85;display:block;margin-top:6px">다시 시도하시거나 아래 <strong>결제선생 카톡 청구서</strong> 버튼을 이용해 주세요.</span>
+          `;
+          formOk.classList.add("show");
+        }
+      } catch (err) {
+        formOk.innerHTML = `
+          <strong>⚠️ 결제 요청 오류</strong><br>
+          <span style="font-size:0.88rem">${escapeHtml(err?.message || "잠시 후 다시 시도해 주세요.")}</span>
+        `;
+        formOk.classList.add("show");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = originalLabel;
+      }
+    });
+  </script>
+</body>
+</html>
